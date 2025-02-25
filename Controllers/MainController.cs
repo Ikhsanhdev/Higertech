@@ -7,6 +7,8 @@ using Higertech.Models.Datatables;
 using Serilog;
 using Higertech.Repositories;
 using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace Higertech.Controllers;
 
@@ -26,6 +28,11 @@ public class MainController : Controller
         this._activitiesRepository = activitiesRepository;
         this._articleRepository = articleRepository;
         this._logger = logger;
+    }
+
+    public class ApiResponse
+    {
+        public IEnumerable<Maps> Data { get; set; }
     }
 
     public IActionResult Privacy()
@@ -139,5 +146,80 @@ public class MainController : Controller
         string endPoint = $"LastReading/all/";
         var data = await GetDataApi(endPoint);
         return Json(data);
+    }
+
+    private async Task<List<Maps>> GetDataFromApi()
+    {
+        string apiUrl = "http://localhost:5000/LastReading/all";
+        string username = "m0n1tor_st4tion";
+        string password = "H1gertech.1dua3";
+
+        using (HttpClient client = new HttpClient())
+        {
+            var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseData = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseData);
+                return apiResponse?.Data?.ToList() ?? new List<Maps>();
+            }
+            else
+            {
+                // Handle errors appropriately
+                return new List<Maps>();
+            }
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GetTotalData(string totalType)
+    {
+        try
+        {
+            var apiResponse = await GetDataFromApi();
+
+            if (apiResponse == null)
+            {
+                // Jika respons API null, kembalikan total 0
+                return Json(new { Total = 0 });
+            }
+
+            int total = 0;
+            var today = DateTime.Today; // Menyimpan tanggal hari ini
+
+            switch (totalType.ToLower())
+            {
+                case "totalpos":
+                    total = apiResponse.Count();
+                    break;
+                case "totalinstansi":
+                    total = apiResponse.Select(a => a.subDomain).Distinct().Count();
+                    break;
+                case "totaldugaair":
+                    total = apiResponse.Count(a => a.stationType == "AWLR" || a.stationType == "AWLR_ARR");
+                    break;
+                case "totalcurahhujan":
+                    total = apiResponse.Count(a => a.stationType == "ARR" || a.stationType == "AWLR_ARR");
+                    break;
+                case "totalklimatologi":
+                    total = apiResponse.Count(a => a.stationType == "AWS");
+                    break;
+                default:
+                    // Jika totalType tidak valid, kembalikan total 0
+                    total = 0;
+                    break;
+            }
+
+            return Json(new { Total = total });
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            Console.WriteLine(ex.Message);
+            return Json(new { Total = 0 });
+        }
     }
 }
