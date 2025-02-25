@@ -22,6 +22,10 @@
   document.addEventListener('scroll', toggleScrolled);
   window.addEventListener('load', toggleScrolled);
 
+  window.ityped.init(document.querySelector('.iTyped'), {
+    strings: ["I'm a Web Developer", 'I Love ngoding', 'I Love CSS3', 'I Love Jquery', 'I Love Laravel'],
+    loop: true
+  });
   /**
    * Mobile nav toggle
    */
