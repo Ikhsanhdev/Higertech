@@ -22,10 +22,10 @@
   document.addEventListener('scroll', toggleScrolled);
   window.addEventListener('load', toggleScrolled);
 
-  window.ityped.init(document.querySelector('.iTyped'), {
-    strings: ["I'm a Web Developer"],
-    loop: true
-  });
+  // window.ityped.init(document.querySelector('.iTyped'), {
+  //   strings: ["I'm a Web Developer"],
+  //   loop: true
+  // });
   /**
    * Mobile nav toggle
    */
