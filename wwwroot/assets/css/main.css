@@ -1027,7 +1027,7 @@ section,
 --------------------------------------------------------------*/
 .constructions .card-item {
   background-color: var(--surface-color);
-  border: 1px solid color-mix(in srgb, var(--default-color), transparent 85%);
+  /* border: 1px solid color-mix(in srgb, var(--default-color), transparent 85%); */
   position: relative;
   border-radius: 0;
 }
@@ -1071,6 +1071,7 @@ section,
   padding: 40px;
   box-shadow: 0px 0 30px rgba(0, 0, 0, 0.1);
   height: 100%;
+  border-radius: 13% 0;
 }
 
 .services .service-item .icon {
@@ -1082,7 +1083,7 @@ section,
 
 .services .service-item .icon i {
   color: var(--heading-color);
-  font-size: 56px;
+  font-size: 46px;
   transition: ease-in-out 0.3s;
   z-index: 2;
   position: relative;
@@ -2875,6 +2876,204 @@ section,
 }
 
 /* Custom */
+
+
+/*--------------------------------------------------------------
+# Global Header Custom
+--------------------------------------------------------------*/
+.header-second {
+  /* Edited */
+  margin: auto;
+  width: 75%;
+  --background-color: rgba(255, 255, 255, 0.95);
+  --heading-color: #3c3c3c;
+  --nav-color: #3c3c3c;
+  --nav-hover-color: #3c3c3c;
+
+  /* First */
+  /* --background-color: rgba(255, 255, 255, 0); */
+  --default-color: #ffffff;
+  /* --heading-color: #ffffff; */
+  color: var(--default-color);
+  background-color: var(--background-color);
+  padding: 5px 0;
+  transition: all 0.5s;
+  z-index: 997;
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.6);
+}
+
+.header-second .logo img {
+  max-height: 22px;
+  margin-right: 8px;
+}
+
+.header-second .logo h1 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.header-second .logo span {
+  font-size: 24px;
+  padding-left: 1px;
+  font-family: var(--heading-font);
+  color: var(--color-primary);
+}
+
+
+
+/* Saat tampilan mobile (lebar kurang dari 768px), ubah menjadi 100% */
+@media (max-width: 768px) {
+  .header-second {
+      width: 100%; /* 100% pada layar mobile */
+      padding-left: 15px; /* Tambahkan padding agar tidak menempel ke tepi */
+      padding-right: 15px;
+  }
+}
+
+.admin-second:hover{
+  background-color: #6b7df5;
+  color: #ffffff;
+  border-color: #2B3785;
+}
+.admin-second a:hover{
+  color: #ffffff;
+}
+
+
+/*--------------------------------------------------------------
+# Global Footer
+--------------------------------------------------------------*/
+.footer-second {
+  color: var(--default-color);
+  background-color: var(--background-color);
+  /* background: url("../img/footer-bg.jpg") top center no-repeat; */
+  background-size: cover;
+  font-size: 14px;
+  position: relative;
+}
+
+.footer-second .container {
+  position: relative;
+}
+
+.footer-second:before {
+  content: "";
+  background: color-mix(in srgb, var(--background-color), transparent 20%);
+  position: absolute;
+  inset: 0;
+}
+
+.footer-second .footer-top {
+  padding-top: 50px;
+}
+
+.footer-second .footer-about .logo {
+  line-height: 1;
+  margin-bottom: 25px;
+}
+
+.footer-second .footer-about .logo img {
+  max-height: 40px;
+  margin-right: 6px;
+}
+
+.footer-second .footer-about .logo span {
+  color: var(--heading-color);
+  font-family: var(--heading-font);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.footer-second .footer-about p {
+  font-size: 14px;
+  font-family: var(--heading-font);
+}
+
+.footer-second .social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 50%);
+  font-size: 16px;
+  color: color-mix(in srgb, var(--default-color), transparent 20%);
+  margin-right: 10px;
+  transition: 0.3s;
+}
+
+.footer-second .social-links a:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.footer-second h4 {
+  font-size: 16px;
+  font-weight: bold;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.footer-second .footer-links {
+  margin-bottom: 30px;
+}
+
+.footer-second .footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-second .footer-links ul i {
+  padding-right: 2px;
+  font-size: 12px;
+  line-height: 0;
+}
+
+.footer-second .footer-links ul li {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.footer-second .footer-links ul li:first-child {
+  padding-top: 0;
+}
+
+.footer-second .footer-links ul a {
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+  display: inline-block;
+  line-height: 1;
+}
+
+.footer-second .footer-links ul a:hover {
+  color: var(--accent-color);
+}
+
+.footer-second .footer-contact p {
+  margin-bottom: 5px;
+}
+
+.footer-second .copyright {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+}
+
+.footer-second .copyright p {
+  margin-bottom: 0;
+}
+
+.footer-second .credits {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* CUSTOM ADVANCE */
 .article-image {
   max-width: 100%;
   aspect-ratio: 9 / 9;
@@ -2944,3 +3143,82 @@ iframe {
       min-height: 200px;
   }
 }
+
+
+.ml10 {
+  position: relative;
+  font-weight: 900;
+  font-size: 4em;
+}
+
+.ml10 .text-wrapper {
+  position: relative;
+  display: inline-block;
+  padding-top: 0.2em;
+  padding-right: 0.05em;
+  padding-bottom: 0.1em;
+  overflow: hidden;
+}
+
+.ml10 .letter {
+  display: inline-block;
+  line-height: 1em;
+  transform-origin: 0 0;
+}
+
+.border-nav {
+  border-radius: 50px; 
+  overflow: hidden; /* Mencegah konten keluar dari border-radius */
+}
+
+/* CUSTOMN BG COLOR */
+.primary-bg-color {
+  --background-color: #2B3785;
+  /* --surface-color: #ffffff; */
+}
+
+.secondary-bg-color {
+  --background-color: #e3e7ff;
+  /* --surface-color: #ffffff; */
+}
+.footer-bg-color {
+  --background-color: #2B3785;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  --surface-color: #252525;
+  --contrast-color: #ffffff;
+}
+.linier-primary {
+  --background-color: #182054;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  --surface-color: #252525;
+  --contrast-color: #ffffff;
+}
+
+/* Wave Custom */
+#wave-top-footer  {
+  display: block;
+  width: 100%;
+  position: relative;
+  top: 0px; /* Mencegah garis putih muncul */
+  bottom: -2px; /* Mencegah garis putih muncul */
+}
+
+ #wave-top {
+  display: block;
+  width: 100%;
+  position: relative;
+
+  bottom: -1px; /* Mencegah garis putih muncul */
+}
+
+
+#wave-bottom {
+  display: block;
+  width: 100%;
+  position: relative;
+  top: -1px; /* Mencegah garis putih muncul */
+}
+
+
