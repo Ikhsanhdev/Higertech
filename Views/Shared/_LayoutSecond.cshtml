@@ -1,0 +1,199 @@
+﻿@using Higertech.Helpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Higertech Karya Sinergi</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/Higertech.styles.css" asp-append-version="true" /> *@
+
+    <link href="~/assets/img/hgt.png" rel="icon">
+    <link href="~/assets/img/hgt.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="~/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="~/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="~/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="~/assets/css/main.css" rel="stylesheet">
+
+    <style>
+        .social-links a {
+            font-size: 24px; /* Ukuran ikon */
+            margin-right: 10px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .social-links a .bi-whatsapp {
+            color: #25D366; /* Warna hijau WhatsApp */
+        }
+
+        .social-links a .bi-instagram {
+            color: #E4405F; /* Warna merah muda Instagram */
+        }
+
+        .social-links a .bi-youtube {
+            color: #FF0000; /* Warna merah YouTube */
+        }
+    </style>
+</head>
+<body>
+    <div id="header" class="header-second d-flex align-items-center fixed-top border-nav mt-3">
+        <div class="container container-md position-relative d-flex align-items-center justify-content-between ">
+            <a class="navbar-brand" asp-area="" asp-controller="Main" asp-action="Index">
+                <!-- Uncomment the line below if you also wish to use an image logo -->
+                <img src="@Url.Content("~/assets/img/higertech.png")" alt="Higertech Logo" style="height: auto; max-height: 40px;">
+                <!-- <h1 class="sitename">UpConstruction</h1> <span>.</span> -->
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    @* <li><a asp-area="" asp-controller="Main" asp-action="Index">Home</a></li> *@
+                    @* <li><a href="#https://e-katalog.lkpp.go.id/katalog/produk/detail/78863377?lang=id&type=general">E-Catalog</a></li> *@
+                    <li><a sp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
+                    <li><a sp-area="" asp-controller="Activity" asp-action="Index">Portofolio</a></li>
+                    <li><a sp-area="" asp-controller="Article" asp-action="Index">Article</a></li>
+                    <li><a asp-area="" asp-controller="Main" asp-action="MapGoogle">Peta</a></li>
+                    @* <li class="dropdown"><a href=""><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="">Dropdown 1</a></li>
+                            <li><a href="">Dropdown 2</a></li>
+                            <li><a href="">Dropdown 3</a></li>
+                            <li><a href="">Dropdown 4</a></li>
+                        </ul>
+                    </li> *@
+                    @* <li><a href="https://api.whatsapp.com/send/?phone=628112332182&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">Contact</a></li> *@
+                    @if (string.IsNullOrEmpty(ClaimIdentity.Username)) {
+                        <li><a href="/Auth/Login">Login</a></li>
+                    } else {
+                        <li><button type="button" class=" btn border border-dark border-nav admin-second"  onClick="window.location.href='/Admin'"><a class="">Admin</a></button></li>
+                    }
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+        </div>
+    </div>
+
+    @* <div class="container"> *@
+        <main role="main" class=" main" style="bottom: -2px;">
+            @RenderBody()
+        </main>
+    @* </div> *@
+    @if (ViewData["HideFooter"] == null || !(bool)ViewData["HideFooter"])
+    {
+        <div class="secondary-bg-color">
+
+       
+        <svg id="wave-top-footer" style="transform:rotate(0deg); transition: 0.3s" viewBox="0 0 1440 160" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="#e3e7ff"></rect>  
+            <defs>
+                <linearGradient id="sw-gradient-0" x1="0" x2="0" y1="1" y2="0">
+                    <stop stop-color="rgba(43, 55, 133, 1)" offset="0%"></stop>
+                    <stop stop-color="rgba(255, 255, 255, 1)" offset="100%"></stop>
+                </linearGradient>
+            </defs>
+            <path style="transform:translate(0, 0px); opacity:1" fill="url(#sw-gradient-0)" d="M0,32L26.7,50.7C53.3,69,107,107,160,104C213.3,101,267,59,320,50.7C373.3,43,427,69,480,74.7C533.3,80,587,64,640,66.7C693.3,69,747,91,800,82.7C853.3,75,907,37,960,29.3C1013.3,21,1067,43,1120,48C1173.3,53,1227,43,1280,53.3C1333.3,64,1387,96,1440,114.7C1493.3,133,1547,139,1600,122.7C1653.3,107,1707,69,1760,50.7C1813.3,32,1867,32,1920,29.3C1973.3,27,2027,21,2080,40C2133.3,59,2187,101,2240,117.3C2293.3,133,2347,123,2400,104C2453.3,85,2507,59,2560,40C2613.3,21,2667,11,2720,29.3C2773.3,48,2827,96,2880,112C2933.3,128,2987,112,3040,106.7C3093.3,101,3147,107,3200,90.7C3253.3,75,3307,37,3360,37.3C3413.3,37,3467,75,3520,77.3C3573.3,80,3627,48,3680,32C3733.3,16,3787,16,3813,16L3840,16L3840,160L3813.3,160C3786.7,160,3733,160,3680,160C3626.7,160,3573,160,3520,160C3466.7,160,3413,160,3360,160C3306.7,160,3253,160,3200,160C3146.7,160,3093,160,3040,160C2986.7,160,2933,160,2880,160C2826.7,160,2773,160,2720,160C2666.7,160,2613,160,2560,160C2506.7,160,2453,160,2400,160C2346.7,160,2293,160,2240,160C2186.7,160,2133,160,2080,160C2026.7,160,1973,160,1920,160C1866.7,160,1813,160,1760,160C1706.7,160,1653,160,1600,160C1546.7,160,1493,160,1440,160C1386.7,160,1333,160,1280,160C1226.7,160,1173,160,1120,160C1066.7,160,1013,160,960,160C906.7,160,853,160,800,160C746.7,160,693,160,640,160C586.7,160,533,160,480,160C426.7,160,373,160,320,160C266.7,160,213,160,160,160C106.7,160,53,160,27,160L0,160Z"></path>
+        </svg>
+ </div>
+        <footer id="footer" class="footer-second footer-bg-color">
+            <div class="container footer-top">
+                <div class="row gy-4">
+                    <div class="col-lg-4 col-md-6 footer-about">
+                        <a href="index.html" class="logo d-flex align-items-center">
+                            <span class="sitename">PT. Higertech Karya Sinergi</span>
+                        </a>
+                        <div class="footer-contact pt-3">
+                            <p>Jl. Jatihandap No.36, Jatihandap,</p>
+                            <p>Kec.Mandalajati, Kota Bandung,</p>
+                            <p>Jawa Barat 40193</p>
+                            @* <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p> *@
+                            <p class="mt-3"><strong>Email:</strong> <span>higertechkaryasinergi@gmail.com</span></p>
+                        </div>
+                        <div class="social-links d-flex mt-4">
+                            <a href="https://api.whatsapp.com/send/?phone=628112332182&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                            <a href="https://www.instagram.com/higertech/" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="https://www.youtube.com/@@higertechtelemetry5846" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-3 footer-links">
+                        <h4>Useful Links</h4>
+                        <ul>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Services</a></li>
+                            <li><a href="#">Terms of service</a></li>
+                            <li><a href="#">Privacy policy</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-2 col-md-3 footer-links">
+                        <h4>Our Services</h4>
+                        <ul>
+                            <li><a href="#">Web Design</a></li>
+                            <li><a href="#">Web Development</a></li>
+                            <li><a href="#">Product Management</a></li>
+                            <li><a href="#">Marketing</a></li>
+                            <li><a href="#">Graphic Design</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container copyright text-center mt-4">
+                <p>Copyright <span>©</span> <span>2021.</span> <strong class="px-1 sitename">PT. Higertech Karya Sinergi</strong></p>
+                @* <div class="credits">
+                    <!-- All the links in the footer should remain intact. -->
+                    <!-- You can delete the links only if you've purchased the pro version. -->
+                    <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                    <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+                    Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                </div> *@
+            </div>
+        </footer>
+    }
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/pages/global.min.js" asp-append-version="true"></script>
+
+    <script src="~/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/vendor/php-email-form/validate.js"></script>
+    <script src="~/assets/vendor/aos/aos.js"></script>
+    <script src="~/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="~/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="~/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="~/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="~/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+
+    <!-- Main JS File -->
+    <script src="~/assets/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Styles", required: false)
+</body>
+</html>

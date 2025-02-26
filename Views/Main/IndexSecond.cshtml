@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutSecond.cshtml";
     ViewData["Title"] = "Home";
 }
 
@@ -134,16 +134,15 @@
     </style>
 }
 
+
 <!-- Hero Section -->
-<section id="hero" class="hero section dark-background">
+<section id="hero" class="hero section linier-primary">
     <div class="info d-flex align-items-center">
         <div class="container">
             <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-6 text-center">
-                    <h2 id="dynamicTitle" class="dynamic-text iTyped" 
-                        data-typing-texts='@Html.Raw(Json.Serialize(Model.Posters.Select(p => p.Title).ToList()))'>
-                    </h2>
-                    <p id="dynamicDescription" class="dynamic-text">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
+                <div class="col-lg-6 text-center ">
+                    <h2 id="dynamicTitle" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Title ?? "Telemetry Specialist")</h2>
+                    <p id="dynamicDescription" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
                     @if (Model.Tombol.Any())
                     {
                         <a href="#constructions" class="btn-get-started">@Model.Tombol.First().Title</a>
@@ -222,22 +221,22 @@
 </section><!-- /Constructions Section -->
 
 <!-- Services Section -->
-<section id="services" class="services section light-background">
-    <!-- Section Title -->
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Layanan Kami</h2>
+<svg id="wave-top" style="transform:rotate(0deg); transition: 0.3s" viewBox="0 0 1440 200" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sw-gradient-0" x1="0" x2="0" y1="1" y2="0"><stop stop-color="rgba(43, 55, 133, 1)" offset="0%"></stop><stop stop-color="rgba(195.164, 203.142, 255, 1)" offset="100%"></stop></linearGradient></defs><path style="transform:translate(0, 0px); opacity:1" fill="url(#sw-gradient-0)" d="M0,40L30,63.3C60,87,120,133,180,150C240,167,300,153,360,130C420,107,480,73,540,60C600,47,660,53,720,50C780,47,840,33,900,23.3C960,13,1020,7,1080,23.3C1140,40,1200,80,1260,103.3C1320,127,1380,133,1440,133.3C1500,133,1560,127,1620,110C1680,93,1740,67,1800,73.3C1860,80,1920,120,1980,113.3C2040,107,2100,53,2160,40C2220,27,2280,53,2340,76.7C2400,100,2460,120,2520,136.7C2580,153,2640,167,2700,143.3C2760,120,2820,60,2880,56.7C2940,53,3000,107,3060,113.3C3120,120,3180,80,3240,76.7C3300,73,3360,107,3420,100C3480,93,3540,47,3600,36.7C3660,27,3720,53,3780,80C3840,107,3900,133,3960,126.7C4020,120,4080,80,4140,80C4200,80,4260,120,4290,140L4320,160L4320,200L4290,200C4260,200,4200,200,4140,200C4080,200,4020,200,3960,200C3900,200,3840,200,3780,200C3720,200,3660,200,3600,200C3540,200,3480,200,3420,200C3360,200,3300,200,3240,200C3180,200,3120,200,3060,200C3000,200,2940,200,2880,200C2820,200,2760,200,2700,200C2640,200,2580,200,2520,200C2460,200,2400,200,2340,200C2280,200,2220,200,2160,200C2100,200,2040,200,1980,200C1920,200,1860,200,1800,200C1740,200,1680,200,1620,200C1560,200,1500,200,1440,200C1380,200,1320,200,1260,200C1200,200,1140,200,1080,200C1020,200,960,200,900,200C840,200,780,200,720,200C660,200,600,200,540,200C480,200,420,200,360,200C300,200,240,200,180,200C120,200,60,200,30,200L0,200Z"></path></svg>    <!-- Section Title -->
+<section id="services" class="services section primary-bg-color">
+    <div class="container section-title text-white " data-aos="fade-up" >
+        <h2 class="text-white">Layanan Kami</h2>
         <p>Solusi terbaik dari Higertech untuk mendukung kebutuhan industri Anda</p>
     </div><!-- End Section Title -->
 
     <div class="container">
-        <div class="row gy-4 justify-content-center">
+        <div class="row g-5 justify-content-center ">
             @foreach (var item in Model.Layanan)
             {
                 <!-- Service Item 1 -->
-                <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="@(100 * (Model.Layanan.IndexOf(item) + 1))">
-                    <div class="service-item position-relative">
+                <div class="col-lg-5 col-md-6"  data-aos="fade-up" data-aos-delay="@(100 * (Model.Layanan.IndexOf(item) + 1))">
+                    <div class="service-item position-relative" style="box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.6);">
                         <div>
-                            <img src="@item.Img_Url" width="100" height="100" alt="@item.Title" >
+                            <img src="@item.Img_Url" width="80" height="80" alt="@item.Title" >
                         </div>
                         <h3>@item.Title</h3>
                         <p align="justify">@item.Description</p>
@@ -247,10 +246,10 @@
         </div>
     </div>
 </section><!-- /Services Section -->
-
-<!-- Projects Section -->
-<section id="projects" class="projects section">
-    <div class="container section-title" data-aos="fade-up">
+<svg id="wave-bottom" style="transform:rotate(180deg); transition: 0.3s" viewBox="0 0 1440 200" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sw-gradient-0" x1="0" x2="0" y1="1" y2="0"><stop stop-color="rgba(43, 55, 133, 1)" offset="0%"></stop><stop stop-color="rgba(195.164, 203.142, 255, 1)" offset="100%"></stop></linearGradient></defs><path style="transform:translate(0, 0px); opacity:1" fill="url(#sw-gradient-0)" d="M0,40L21.8,63.3C43.6,87,87,133,131,150C174.5,167,218,153,262,130C305.5,107,349,73,393,60C436.4,47,480,53,524,50C567.3,47,611,33,655,23.3C698.2,13,742,7,785,23.3C829.1,40,873,80,916,103.3C960,127,1004,133,1047,133.3C1090.9,133,1135,127,1178,110C1221.8,93,1265,67,1309,73.3C1352.7,80,1396,120,1440,113.3C1483.6,107,1527,53,1571,40C1614.5,27,1658,53,1702,76.7C1745.5,100,1789,120,1833,136.7C1876.4,153,1920,167,1964,143.3C2007.3,120,2051,60,2095,56.7C2138.2,53,2182,107,2225,113.3C2269.1,120,2313,80,2356,76.7C2400,73,2444,107,2487,100C2530.9,93,2575,47,2618,36.7C2661.8,27,2705,53,2749,80C2792.7,107,2836,133,2880,126.7C2923.6,120,2967,80,3011,80C3054.5,80,3098,120,3120,140L3141.8,160L3141.8,200L3120,200C3098.2,200,3055,200,3011,200C2967.3,200,2924,200,2880,200C2836.4,200,2793,200,2749,200C2705.5,200,2662,200,2618,200C2574.5,200,2531,200,2487,200C2443.6,200,2400,200,2356,200C2312.7,200,2269,200,2225,200C2181.8,200,2138,200,2095,200C2050.9,200,2007,200,1964,200C1920,200,1876,200,1833,200C1789.1,200,1745,200,1702,200C1658.2,200,1615,200,1571,200C1527.3,200,1484,200,1440,200C1396.4,200,1353,200,1309,200C1265.5,200,1222,200,1178,200C1134.5,200,1091,200,1047,200C1003.6,200,960,200,916,200C872.7,200,829,200,785,200C741.8,200,698,200,655,200C610.9,200,567,200,524,200C480,200,436,200,393,200C349.1,200,305,200,262,200C218.2,200,175,200,131,200C87.3,200,44,200,22,200L0,200Z"></path></svg><!-- Projects Section -->
+<section id="recent-blog-posts" class="recent-blog-posts section">
+    <!-- Section Title -->
+    <div class="container section-title pt-5" data-aos="fade-up">
         <h2>Artikel</h2>
         <p>Informasi terbaru inovasi dan teknologi terbaik</p>
     </div>
@@ -399,9 +398,9 @@
         </div>
     </div>
 </section><!-- /Testimonials Section -->
-
+<svg id="wave-top" xmlns="http://www.w3.org/2000/svg" style="height: 60%;" viewBox="0 0 1440 320"><path fill="#e3e7ff" fill-opacity="1" d="M0,64L26.7,69.3C53.3,75,107,85,160,112C213.3,139,267,181,320,208C373.3,235,427,245,480,240C533.3,235,587,213,640,218.7C693.3,224,747,256,800,261.3C853.3,267,907,245,960,224C1013.3,203,1067,181,1120,170.7C1173.3,160,1227,160,1280,160C1333.3,160,1387,160,1413,160L1440,160L1440,320L1413.3,320C1386.7,320,1333,320,1280,320C1226.7,320,1173,320,1120,320C1066.7,320,1013,320,960,320C906.7,320,853,320,800,320C746.7,320,693,320,640,320C586.7,320,533,320,480,320C426.7,320,373,320,320,320C266.7,320,213,320,160,320C106.7,320,53,320,27,320L0,320Z"></path></svg>
 <!-- Youtube Section  -->
-<section id="youtube" class="section">
+<section id="youtube" class="section secondary-bg-color">
     <div class="container section-title" data-aos="fade-up">
         <h2>Video Kami</h2>
         <p>Temukan berbagai video informatif dan dokumentasi proyek kami melalui tayangan YouTube berikut</p>
@@ -479,14 +478,12 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/assets/js/ityped.min.js"></script>
-    <script src="~/js/pages/main/index.min.js"></script>
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Animate.css -->
-    <!-- Textillate.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/textillate/0.4.0/jquery.textillate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.6.1/jquery.lettering.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Animate.css -->
+        <!-- Textillate.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/textillate/0.4.0/jquery.textillate.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.6.1/jquery.lettering.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#dynamicTitle').textillate({

@@ -20,7 +20,7 @@ public class MainController : Controller
     private readonly IActivitiesRepository _activitiesRepository;
     private readonly IArticleRepository _articleRepository;
 
-    public MainController(ILogger<MainController> logger, IUnitOfWorkRepository unitOfWorkRepository, IProjectRepository projectRepository, 
+    public MainController(ILogger<MainController> logger, IUnitOfWorkRepository unitOfWorkRepository, IProjectRepository projectRepository,
     IActivitiesRepository activitiesRepository, IArticleRepository articleRepository)
     {
         this._unitOfWorkRepository = unitOfWorkRepository;
@@ -94,7 +94,7 @@ public class MainController : Controller
                     Category = m.Category,
                     Author = m.Author,
                     Slug = m.Slug,
-                    CreatedAt =m.CreatedAt
+                    CreatedAt = m.CreatedAt
                 }).Take(6).OrderByDescending(m => m.CreatedAt).ToList()
             };
 
@@ -107,9 +107,65 @@ public class MainController : Controller
         }
     }
 
-    private async Task<dynamic> GetDataApi(string endPoint){
-        
-        string apiUrl = $"http://localhost:5000/{endPoint}"; 
+
+    [Route("/main/indexsecond")]
+    public async Task<IActionResult> IndexSecond()
+    {
+        try
+        {
+            var mains = await _unitOfWorkRepository.Main.GetAllAsync();
+            var projects = await _projectRepository.GetListProjectAsync();
+            var activity = await _activitiesRepository.GetListActivityAsync();
+            var article = await _articleRepository.GetListArticleAsync();
+
+            if (mains == null || !mains.Any())
+            {
+                _logger.LogWarning("No data found");
+                return View("~/Views/Main/IndexSecond.cshtml", new MainViewModel());
+            }
+
+            var viewModel = new MainViewModel
+            {
+                Posters = mains.Where(m => m.Category == "poster").ToList(),
+                Tombol = mains.Where(m => m.Category == "tombol").ToList(),
+                Layanan = mains.Where(m => m.Category == "layanan").ToList(),
+                // Projects = projects.OrderByDescending(p => p.UpdatedAt).Take(6).ToList(),
+                Klien = mains.Where(m => m.Category == "klien").ToList(),
+                Activity = activity.Select(m => new ActivityModel
+                {
+                    Title = m.Title,
+                    Description = m.Description,
+                    Image = m.Image,
+                    ClientName = m.ClientName,
+                    DateProject = m.DateProject,
+                    DateActivity = m.DateActivity
+                }).Take(4).OrderByDescending(m => m.DateProject).ToList(),
+                Articles = article.Select(m => new Article
+                {
+                    Title = m.Title,
+                    Description = m.Description,
+                    Image = m.Image,
+                    Category = m.Category,
+                    Author = m.Author,
+                    Slug = m.Slug,
+                    CreatedAt = m.CreatedAt
+                }).Take(6).OrderByDescending(m => m.CreatedAt).ToList()
+            };
+
+            return View("~/Views/Main/IndexSecond.cshtml", viewModel);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading data: {Message}", ex.Message);
+            return View("~/Views/Main/IndexSecond.cshtml", new MainViewModel());
+        }
+    }
+
+
+    private async Task<dynamic> GetDataApi(string endPoint)
+    {
+
+        string apiUrl = $"http://localhost:5000/{endPoint}";
         string username = "m0n1tor_st4tion";
         string password = "H1gertech.1dua3";
 
@@ -142,7 +198,8 @@ public class MainController : Controller
         }
     }
 
-    public async Task<JsonResult> GetStationAll(){
+    public async Task<JsonResult> GetStationAll()
+    {
         string endPoint = $"LastReading/all/";
         var data = await GetDataApi(endPoint);
         return Json(data);
