@@ -140,9 +140,9 @@
     <div class="info d-flex align-items-center">
         <div class="container">
             <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="col-lg-6 text-center ">
-                    <h2 id="dynamicTitle" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Title ?? "Telemetry Specialist")</h2>
-                    <p id="dynamicDescription" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
+                <div class="col-lg-6 text-center">
+                    <h2 id="dynamicTitle" class="dynamic-text iTyped">@(Model.Posters.FirstOrDefault()?.Title ?? "Telemetry Specialist")</h2>
+                    <p id="dynamicDescription" class="dynamic-text">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
                     @if (Model.Tombol.Any())
                     {
                         <a href="#constructions" class="btn-get-started">@Model.Tombol.First().Title</a>
