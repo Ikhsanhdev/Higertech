@@ -9,137 +9,7 @@
 <!-- Product Section -->
 @section styles{
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/carousel/carousel.css"/>
-    <style>
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-img-top {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            padding: 10px;
-        }
-
-        .card-body {
-            padding: 15px;
-            text-align: center;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Category filter */
-        .category-filter {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .category-filter select {
-            width: 200px;
-        }
-
-        /* Modal styles */
-        .modal-dialog {
-            max-width: 800px;
-        }
-
-        .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            background: linear-gradient(135deg, #f5f7fa, #e9eff5);
-        }
-
-        .modal-header {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .btn-close {
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            padding: 5px;
-        }
-
-        /* Product detail container */
-        .product-detail-image-container {
-            height: 700px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .product-detail-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        /* Product info section */
-        .product-info-container {
-            padding: 0 15px; /* Mengurangi padding samping */
-            height: 700px;
-            overflow-y: auto;
-        }
-
-        .product-section {
-            margin-bottom: 0.5rem; /* Kurangi margin antar section */
-        }
-
-        #modalProductTitle {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 0.25rem; /* Mengurangi margin bawah judul */
-        }
-
-        .section-titlel {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 0.25rem; /* Mengurangi jarak antara label dan konten */
-        }
-
-        .section-content {
-            font-size: 0.95rem;
-            color: #444;
-            margin-bottom: 0.25rem; /* Mengurangi jarak antar konten */
-        }
-
-        /* Scrollbar styling */
-        .product-info-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .product-info-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .product-info-container::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-    </style>
+    <link href="~/assets/css/product.css" rel="stylesheet">
 }
 
 <br>
@@ -168,23 +38,24 @@
                 @foreach (var product in Model)
                 {
                     var imageUrl = product.GambarUrl?.TrimStart('/');
-                    <div class="col-md-4" data-aos="fade-up" data-category="@(product.Kategori?.ToLower() ?? "")">
-                        <div class="card border-0 shadow">
-                            <!-- Tambahkan onclick di elemen <a> -->
-                            <a href="javascript:void(0);" 
-                            onclick="showProductDetail('@product.Id')">
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-category="@(product.Kategori?.ToLower() ?? "")">
+                        <div class="card border-0 shadow h-100">
+                            <a href="javascript:void(0);" onclick="showProductDetail('@product.Id')">
                                 <img src="@Url.Content("~/" + imageUrl)" 
                                     alt="@product.NamaProduk" 
                                     class="card-img-top"
                                     onerror="this.onerror=null; this.src='@Url.Content("~/assets/placeholder.png")';">
                             </a>
-                            <div class="card-body text-center">
-                                <h5 class="card-title">@product.NamaProduk</h5>
-                                <p class="text-muted mb-2">@product.Kategori</p>
-                                <button class="btn btn-main w-100" 
-                                        onclick="showProductDetail('@product.Id')">
-                                    Detail
-                                </button>
+                            <div class="card-body d-flex flex-column">
+                                <div>
+                                    <h5 class="card-title">@product.NamaProduk</h5>
+                                    <p class="text-muted mb-3">@product.Kategori</p>
+                                </div>
+                                <div class="mt-auto">
+                                    <button class="btn btn-main w-100" onclick="showProductDetail('@product.Id')">
+                                        Detail
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -201,66 +72,101 @@
 
     <!-- Modal -->
     <div class="modal fade" id="productModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Detail Product</h5>
+                    <h5 class="modal-title" style="color: white;">DETAIL PRODUCT</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Product Image -->
                         <div class="col-md-6">
                             <div class="product-detail-image-container">
                                 <img id="modalProductImage" src="" class="product-detail-image" alt="Product Image">
                             </div>
                         </div>
+                        
+                        <!-- Product Info -->
                         <div class="col-md-6">
                             <div class="product-info-container">
                                 <!-- Product Title -->
                                 <div class="product-section">
-                                    <h4 id="modalProductTitle" class="section-titlel">Product Name</h4>
+                                    <h4 id="modalProductTitle" class="section-titlel">DATA LOGGER TELEMETRY HGT_L01</h4>
                                     <hr>
                                 </div>
 
-                                <!-- Category Section -->
+                                <!-- Function Section -->
                                 <div class="product-section">
-                                    <h5 class="section-titlel">Category</h5>
-                                    <p id="modalProductCategory" class="section-content">Category Name</p>
+                                    <h5 class="section-titlel">FUNGSI ALAT</h5>
+                                    <p id="modalProductFunction" class="section-content">
+                                        DATA LOGGER HIGERTECH adalah instrumentasi yang dikembangkan untuk merekam, mengendalikan, dan menampilkan data-data dari berbagai macam sensor, seperti sensor Tinggi Muka Air Sungai, Bendung, Tampungan Bendungan, Saluran Irigasi dan lain-lain. Data yang terekam dapat disimpan dalam micro SD yang dapat dipasang dan dilepas kapan saja. Data Logger ini juga dilengkapi dengan sistem dengan kemampuan yang dapat terus dikembangkan sesuai ketersediaan sensor. Selain itu, data logger dapat mengirim data-data dari sensor ke server secara otomatis untuk ditampilkan pada platform data visual lebih lanjut.
+                                    </p>
                                     <hr>
                                 </div>
 
-                                <!-- Description Section -->
+                                <!-- Features Section -->
                                 <div class="product-section">
-                                    <h5 class="section-titlel">Description</h5>
-                                    <p id="modalProductDescription" class="section-content">Product Description goes here.</p>
+                                    <h5 class="section-titlel">FITUR</h5>
+                                    <div id="productFeatures">
+                                        <div class="feature-item">Low Power</div>
+                                        <div class="feature-item">Berbasis GPRS 4G / Internet</div>
+                                        <div class="feature-item">SMS (Optional)</div>
+                                        <div class="feature-item">Setup Device is long into logger firmware through to a browser</div>
+                                        <div class="feature-item">Auto Reset Network</div>
+                                        <div class="feature-item">HTTP Postget Protocol & MQTT</div>
+                                        <div class="feature-item">CSV Formatt File Data Logger</div>
+                                    </div>
                                     <hr>
                                 </div>
 
-                                <div>
-                                    <h5 class="section-titlel">Link Tkdn</h5>
-                                    <p>40% <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech">TKDN KEMENPERIN</a></p>
+                                <!-- Specifications Section -->
+                                <div class="product-section">
+                                    <h5 class="section-titlel">SPESIFIKASI</h5>
+                                    <div id="productSpecs">
+                                        <div class="feature-item">Single or Dual-Core 32-bit LX6 Microprocessor</div>
+                                        <div class="feature-item">Clock frequency up to 240 MHz</div>
+                                        <div class="feature-item">Supports 802.11 b/g/n Wi-Fi connectivity with speeds up to 150 Mbps</div>
+                                        <div class="feature-item">2 Digital Inputs PWM, SDI12, RS485</div>
+                                        <div class="feature-item">8 Analog Input 16 BIT</div>
+                                    </div>
+                                    <hr>
+                                </div>
+
+                                <!-- Application Section -->
+                                <div class="product-section">
+                                    <h5 class="section-titlel">APLIKASI</h5>
+                                    <div id="productApplication">
+                                        <div class="feature-item">Pemantauan Daerah Aliran Sungai (DAS) Dan Wilayah Sungai (WS)</div>
+                                        <div class="feature-item">Bendungan, Bendang, Irigasi, Rawa, Air Baku, PLTA</div>
+                                        <div class="feature-item">Pengukuran Bidang Hidrologi, Pertanian</div>
+                                        <div class="feature-item">Pengukuran Bidang Klimatologi</div>
+                                    </div>
+                                    <hr>
+                                </div>
+
+                                <!-- TKDN Section -->
+                                <div class="product-section">
+                                    <h5 class="section-titlel">TKDN</h5>
+                                    <p>Sertifikat Tingkat Komponen Dalam Negeri (TKDN) 40% <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech" class="btn btn-sm btn-outline-primary" target="_blank">TKDN KEMENPERIN</a></p>
+                                    <div class="row mt-3 tkdn-section">
+                                        <div class="col-6">
+                                            <img src="/assets/img/tkdnn.png" class="img-fluid" alt="TKDN Certificate">
+                                        </div>
+                                        <div class="col-6">
+                                            <img src="/assets/img/pdf.png" class="img-fluid" alt="PDF Document">
+                                        </div>
+                                    </div>
                                     <hr>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col">
-                                        <img src="assets/img/tkdnn.png" width="120" height="90" alt="">
-                                    </div>
-                                    <div class="col">
-                                        <img src="assets/img/pdf.png" width="120" height="90" alt="">
-                                    </div>
-                                    
-                                </div>
-
-                                                                
-                                <div class="row">
-                                    <div class="col"><br>
-                                    @* to new page *@
-                                    
-                                        <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank"  ><img src="assets/img/catalog2025.jpg" width="120" height="190" alt=""></a>
-                                    </div>
-
-                                    
+                                <!-- Catalog Section -->
+                                <div class="product-section catalog-section">
+                                    <h5 class="section-titlel">CATALOG</h5>
+                                    <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">
+                                        <p class="btn btn-sm btn-outline-primary">Download Catalog</p>
+                                        <img src="/assets/img/catalog2025.jpg" class="img-fluid" alt="Catalog 2025">
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -284,13 +190,22 @@
                 const product = await response.json();
                 
                 if (product) {
+                    // Set title
                     document.getElementById('modalProductTitle').textContent = product.nama_produk;
+                    
+                    // Set image
                     const imageUrl = product.gambar_url?.startsWith('/') ? 
                         product.gambar_url : 
                         '/' + product.gambar_url;
                     document.getElementById('modalProductImage').src = imageUrl;
-                    document.getElementById('modalProductCategory').textContent = product.kategori;
-                    document.getElementById('modalProductDescription').textContent = product.deskripsi;
+                    
+                    // Set function (description)
+                    if (document.getElementById('modalProductFunction')) {
+                        document.getElementById('modalProductFunction').textContent = product.deskripsi || '';
+                    }
+                    
+                    // You may need to add code to populate features, specs, and application
+                    // if that data is available in your product object
                     
                     const modal = new bootstrap.Modal(document.getElementById('productModal'));
                     modal.show();
