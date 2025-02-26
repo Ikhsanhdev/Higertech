@@ -146,6 +146,8 @@ h6 {
   --background-color: rgba(255, 255, 255, 0);
   --default-color: #ffffff;
   --heading-color: #ffffff;
+  --nav-color: #000000;
+  --nav-hover-color: #000000;
   color: var(--default-color);
   background-color: var(--background-color);
   padding: 20px 0;
@@ -154,7 +156,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 53px !important;
+  max-height: 60px !important;
   margin-right: 8px;
 }
 
@@ -179,10 +181,11 @@ h6 {
 /* Global Header on Scroll
 ------------------------------*/
 .scrolled .header {
-  --background-color: rgba(255, 255, 255, 0.95);
-  --heading-color: #3c3c3c;
-  --nav-color: #3c3c3c;
-  --nav-hover-color: #3c3c3c;
+  --background-color: linear-gradient(90deg, #FFFFFF, #2A3888, #2B3785);
+  --heading-color: #ffffff;
+  --nav-color: #ffffff;
+  --nav-hover-color: #313131;
+  background-image: var(--background-color);
 }
 
 /*--------------------------------------------------------------
@@ -454,10 +457,24 @@ h6 {
 .footer {
   color: var(--default-color);
   background-color: var(--background-color);
-  background: url("../img/footer-bg.jpg") top center no-repeat;
+  /* background: url("../img/footer-bg.jpg") top center no-repeat; */
   background-size: cover;
   font-size: 14px;
   position: relative;
+}
+
+.footer.dark-background {
+  background-image: none; /* Remove any existing background image */
+  background: linear-gradient(90deg, #FFFFFF, #2A3888, #2B3785);
+  position: relative;
+}
+
+/* If there's an overlay that needs adjustment due to the new background */
+.footer.dark-background:before {
+  content: "";
+  background: color-mix(in srgb, transparent, transparent 20%); /* Adjust as needed */
+  position: absolute;
+  inset: 0;
 }
 
 .footer .container {
@@ -481,7 +498,7 @@ h6 {
 }
 
 .footer .footer-about .logo img {
-  max-height: 40px;
+  max-height: 60px;
   margin-right: 6px;
 }
 
@@ -577,6 +594,53 @@ h6 {
 .footer .credits {
   margin-top: 8px;
   font-size: 13px;
+}
+
+.social-links a {
+  font-size: 24px;
+  margin-right: 10px;
+  transition: color 0.3s ease-in-out;
+}
+
+.social-links a .bi-whatsapp {
+  color: #25D366;
+}
+
+.social-links a .bi-instagram {
+  color: #E4405F;
+}
+
+.social-links a .bi-youtube {
+  color: #FF0000;
+}
+
+.whatsapp-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #25D366;
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-btn:hover {
+  background-color: #128C7E;
+  transform: scale(1.1);
+  color: #fff;
+}
+
+.whatsapp-btn i {
+  margin-top: 2px;
 }
 
 /*--------------------------------------------------------------
