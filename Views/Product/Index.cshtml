@@ -9,20 +9,23 @@
 <!-- Product Section -->
 @section styles{
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/carousel/carousel.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link href="~/assets/css/product.css" rel="stylesheet">
 }
 
-<br>
-<br>
-<br>
+<section id="hero" class="hero section dark-background">
+    <div class="info d-flex align-items-center">
+        <div class="container">
+        </div>
+    </div>
+</section>
 
 <section id="Product" class="Product section">
     <div class="container section-title text-center" data-aos="fade-up">
         <h2>Product</h2>
         <p>Our various superior products</p>
     </div>
-
-    <div class="container category-filter d-flex align-items-center">
+     <div class="container category-filter d-flex align-items-center">
         <label for="categoryFilter" class="me-2 fw-bold">Category :</label>
         <select id="categoryFilter" class="form-select">
             <option value="semua">All Product</option>
@@ -30,7 +33,6 @@
             <option value="klimatologi">Klimatologi</option>
         </select>
     </div>
-
     <div class="container">
         <div class="row gy-4" id="productContainer">
             @if (Model != null && Model.Any())
@@ -39,8 +41,8 @@
                 {
                     var imageUrl = product.GambarUrl?.TrimStart('/');
                     <div class="col-md-4 mb-4" data-aos="fade-up" data-category="@(product.Kategori?.ToLower() ?? "")">
-                        <div class="card border-0 shadow h-100">
-                            <a href="javascript:void(0);" onclick="showProductDetail('@product.Id')">
+                        <div class="card border-0 shadow h-100" onclick="showProductDetail('@product.Id')">
+                            <a href="javascript:void(0);">
                                 <img src="@Url.Content("~/" + imageUrl)" 
                                     alt="@product.NamaProduk" 
                                     class="card-img-top"
@@ -80,19 +82,40 @@
                 </div>
                 <div class="modal-body p-0">
                     <div class="row g-0">
-                        <!-- Product Image -->
-                        <div class="col-md-6">
+                        <!-- Product Image with Carousel -->
+                        <div class="col-md-5">
                             <div class="product-detail-image-container">
                                 <img id="modalProductImage" src="" class="product-detail-image" alt="Product Image">
+                            </div>
+                            <!-- Image Thumbnails Carousel -->
+                            <div class="product-thumbnails-container">
+                                <div class="thumbnails-wrapper">
+                                    <!-- Hardcoded sample thumbnails -->
+                                    <div class="thumbnail-item active" data-image="/assets/img/product/curahhujan.png">
+                                        <img src="/assets/img/product/curahhujan.png" alt="Product Thumbnail 1">
+                                    </div>
+                                    <div class="thumbnail-item" data-image="/assets/img/product/piscal.png">
+                                        <img src="/assets/img/product/piscal.png" alt="Product Thumbnail 2">
+                                    </div>
+                                    <div class="thumbnail-item" data-image="/assets/img/product/loggerlo1.png">
+                                        <img src="/assets/img/product/loggerlo1.png" alt="Product Thumbnail 3">
+                                    </div>
+                                    <div class="thumbnail-item" data-image="/assets/img/product/Reedswitch.png">
+                                        <img src="/assets/img/product/Reedswitch.png" alt="Product Thumbnail 4">
+                                    </div>
+                                    <div class="thumbnail-item" data-image="/assets/img/product/AwlrSonar.png">
+                                        <img src="/assets/img/product/AwlrSonar.png" alt="Product Thumbnail 5">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- Product Info -->
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <div class="product-info-container">
                                 <!-- Product Title -->
                                 <div class="product-section">
-                                    <h4 id="modalProductTitle" class="section-titlel">DATA LOGGER TELEMETRY HGT_L01</h4>
+                                    <h4 id="modalProductTitle" class="section-titles" style="color: #3b3b3b;">DATA LOGGER TELEMETRY HGT_L01</h4>
                                     <hr>
                                 </div>
 
@@ -163,8 +186,8 @@
                                 <!-- Catalog Section -->
                                 <div class="product-section catalog-section">
                                     <h5 class="section-titlel">CATALOG</h5>
+                                    <p class="btn btn-sm btn-outline-primary"><a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank"></a>Download Catalog</p><br>
                                     <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">
-                                        <p class="btn btn-sm btn-outline-primary">Download Catalog</p>
                                         <img src="/assets/img/catalog2025.jpg" class="img-fluid" alt="Catalog 2025">
                                     </a>
                                 </div>
@@ -179,8 +202,38 @@
 
 @section Scripts{
     <script src="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        // Function untuk menampilkan detail produk
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize thumbnails functionality
+            initThumbnailsGallery();
+        });
+
+        // Function to initialize thumbnail gallery
+        function initThumbnailsGallery() {
+            // This will be called once the DOM is fully loaded
+            document.addEventListener('click', function(e) {
+                // Check if a thumbnail was clicked
+                if (e.target.closest('.thumbnail-item')) {
+                    const thumbnailItem = e.target.closest('.thumbnail-item');
+                    const imageUrl = thumbnailItem.dataset.image;
+                    
+                    // Update main image
+                    const mainImage = document.getElementById('modalProductImage');
+                    if (mainImage) {
+                        mainImage.src = imageUrl;
+                        
+                        // Update active state
+                        document.querySelectorAll('.thumbnail-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        thumbnailItem.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        // Update the showProductDetail function to handle dynamic thumbnails
         async function showProductDetail(productId) {
             try {
                 const response = await fetch(`/Product/GetProductById/${productId}`);
@@ -193,7 +246,7 @@
                     // Set title
                     document.getElementById('modalProductTitle').textContent = product.nama_produk;
                     
-                    // Set image
+                    // Set main image
                     const imageUrl = product.gambar_url?.startsWith('/') ? 
                         product.gambar_url : 
                         '/' + product.gambar_url;
@@ -204,8 +257,16 @@
                         document.getElementById('modalProductFunction').textContent = product.deskripsi || '';
                     }
                     
-                    // You may need to add code to populate features, specs, and application
-                    // if that data is available in your product object
+                    // In a real implementation, you would dynamically generate thumbnails
+                    // based on product images from your database
+                    // For now, we're using hardcoded thumbnails
+                    
+                    // Set the first thumbnail as active
+                    const thumbnails = document.querySelectorAll('.thumbnail-item');
+                    if (thumbnails.length > 0) {
+                        thumbnails.forEach(item => item.classList.remove('active'));
+                        thumbnails[0].classList.add('active');
+                    }
                     
                     const modal = new bootstrap.Modal(document.getElementById('productModal'));
                     modal.show();
