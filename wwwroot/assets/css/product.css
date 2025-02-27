@@ -93,12 +93,12 @@
 .category-filter {
     background: white;
     padding: 15px 25px;
-    border-radius: 50px;
+    border-radius: 20px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 30px;
     display: flex;
     justify-content: center;
-    max-width: 400px;
+    max-width: 350px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -346,18 +346,48 @@ hr {
 /* TKDN and document section */
 .tkdn-section {
     display: flex;
-    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px; /* Memberi jarak antar gambar */
     margin-bottom: 15px;
+    margin-left: 15px;
 }
 
+.tkdn-section .col-md-4 {
+    flex: 1 1 30%; /* Mengatur agar setiap gambar mengambil 30% dari lebar */
+    display: flex;
+    justify-content: center;
+}
+
+/* Menyesuaikan ukuran gambar */
 .tkdn-section img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
     transition: transform 0.3s ease;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* Efek hover pada gambar */
 .tkdn-section img:hover {
     transform: scale(1.05);
+}
+
+/* Responsif untuk layar kecil (max-width: 768px) */
+@media (max-width: 768px) {
+    .tkdn-section {
+        flex-direction: row; /* Tetap horizontal */
+        justify-content: center;
+        gap: 5px; /* Mengurangi jarak agar muat 3 gambar */
+    }
+
+    .tkdn-section .col-md-4 {
+        flex: 1 1 calc(33.33% - 10px); /* Membuat 3 kolom sejajar */
+        max-width: 33.33%;
+    }
+
+    .tkdn-section img {
+        height: 60px; /* Menyesuaikan ukuran gambar agar tidak terlalu besar */
+    }
 }
 
 .catalog-section {
@@ -374,6 +404,16 @@ hr {
 .catalog-section img:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.img-fluid {
+    max-width: 20%;
+    height: auto;
+}
+
+.img-tkdn {
+    max-width: auto;
+    height: auto;
 }
 
 /* Responsive adjustments */
