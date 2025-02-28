@@ -3171,7 +3171,7 @@ section,
   background: var(--surface-color);
   box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
   transition: 0.3s;
-  border-radius: 20%;
+  /* border-radius: 20%; */
 }
 
 .recent-blog-posts-second .post-item .img-cover {
@@ -3287,7 +3287,7 @@ section,
 
 .article-image {
   max-width: 100%;
-  aspect-ratio: 9 / 9;
+  aspect-ratio: 9 / 11;
   object-fit: cover;
 }
 .project-image {

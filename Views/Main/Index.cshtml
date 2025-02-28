@@ -335,8 +335,9 @@
                     <div class="col-xl-4 col-md-6 ">
                         <div class="post-item position-relative h-100 " data-aos="fade-up" data-aos-delay="100">
                            @* <div class="post-img position-relative overflow-hidden img-cover rounded" style="background-image: url('@(string.IsNullOrEmpty(artikel.Image) ? Url.Content("/assets/img/higertech-default.png") : Url.Content(artikel.Image))');"> *@
-                           <div class="post-img position-relative overflow-hidden img-cover rounded img-fluid article-image" style="background-image: url('/assets/img/higertech-default.png')">
-                                @* <img src="@Url.Content(artikel.Image)" class="img-fluid  w-100 article-image" alt=""> *@
+                           <div class="post-img position-relative overflow-hidden img-cover rounded img-fluid article-image" >
+                           @* <div class="post-img position-relative overflow-hidden img-cover rounded img-fluid article-image" style="background-image: url('@artikel.Image')"> *@
+                                <img src="@Url.Content(artikel.Image)" class="img-fluid  w-100 article-image" alt="">
 
                                 <div class="post-content d-flex flex-column ">
                                     <div class="meta d-flex align-items-center mb-3">
