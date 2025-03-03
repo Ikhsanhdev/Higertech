@@ -141,10 +141,12 @@
         <div class="container">
             <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
                 <div class="col-lg-6 text-center">
-                    <h2 id="dynamicTitle" class="dynamic-text iTyped" 
-                        data-typing-texts='@Html.Raw(Json.Serialize(Model.Posters.Select(p => p.Title).ToList()))'>
+                    @* <h2 id="dynamicTitle" class="dynamic-text tlt animate__animated"  *@
+                        @* data-typing-texts='@Html.Raw(Json.Serialize(Model.Posters.Select(p => p.Title).ToList()))'> *@
+                    <h2 id="dynamicTitle" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Title ?? "Telemetry Specialist")</h2>
+
                     </h2>
-                    <p id="dynamicDescription" class="dynamic-text">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
+                    <p id="dynamicDescription" class="dynamic-text tlt animate__animated">@(Model.Posters.FirstOrDefault()?.Description ?? "Welcome to Higertech")</p>
                     @if (Model.Tombol.Any())
                     {
                         <a href="#constructions" class="btn-get-started">@Model.Tombol.First().Title</a>
@@ -725,6 +727,83 @@
         
         // Initialize on load
         initCarousel();
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#dynamicTitle').textillate({
+               in: {
+                    effect: 'fadeInLeftBig',
+                    delayScale: 3.8,
+                    delay: 50,
+                    sync: false,
+                    shuffle: false,
+                    reverse: false,
+                    callback: function () {}
+                },
+
+                // out animation settings.
+                out: {
+                    effect: 'hinge',
+                    delayScale: 3.8,
+                    delay: 50,
+                    sync: false,
+                    shuffle: false,
+                    reverse: false,
+                    callback: function () {}
+                },
+                loop: true // Animasi berulang
+            });
+
+            $('#dynamicDescription').textillate({
+               in: {
+                    effect: 'fadeInLeftBig',
+                    delayScale: 1,
+                    delay: 50,
+                    sync: false,
+                    shuffle: false,
+                    reverse: false,
+                    callback: function () {}
+                },
+
+                // out animation settings.
+                out: {
+                    effect: 'hinge',
+                    delayScale: 1,
+                    delay: 50,
+                    sync: false,
+                    shuffle: false,
+                    reverse: false,
+                    callback: function () {}
+                },
+                loop: true // Animasi berulang
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const carousel = document.getElementById('hero-carousel');
+            const dynamicTitle = document.getElementById('dynamicTitle');
+            const dynamicDescription = document.getElementById('dynamicDescription');
+            const defaultTitle = dynamicTitle.textContent;
+            const defaultDescription = dynamicDescription.textContent;
+
+            carousel.addEventListener('slide.bs.carousel', function (event) {
+                const nextSlide = event.relatedTarget;
+                const title = nextSlide.getAttribute('data-title') || defaultTitle;
+                const description = nextSlide.getAttribute('data-description') || defaultDescription;
+
+                dynamicTitle.style.opacity = 0;
+                dynamicDescription.style.opacity = 0;
+
+                setTimeout(() => {
+                    dynamicTitle.textContent = title;
+                    dynamicDescription.textContent = description;
+                    dynamicTitle.style.opacity = 1;
+                    dynamicDescription.style.opacity = 1;
+                }, 250);
+            });
+        });
 
     </script>
 }
