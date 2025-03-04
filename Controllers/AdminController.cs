@@ -390,16 +390,146 @@ public class AdminController : Controller
 
     [HttpPost]
     [Route("/Admin/Product")]
-    public async Task<IActionResult> SaveProduct(ProductVM model,IFormFile file)
+    public async Task<IActionResult> SaveProduct([FromForm] ProductVM model)
     {
         AjaxResponse response = new();
         
-        if (file != null)
+        try
         {
-            model.gambar_url = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "products");
+            Console.WriteLine("Menerima request penyimpanan produk...");
+            
+            // First save the product to get ID (for new products)
+            response = await _unitOfWorkRepository.Product.SaveAsync(model);
+            
+            if (response.Code == 200)
+            {
+                Guid productId = model.id != Guid.Empty ? model.id : (Guid)response.Data;
+                
+                Console.WriteLine($"Produk berhasil disimpan dengan ID: {productId}");
+                
+                string firstImageUrl = null;
+
+                // Pastikan file dikirim
+                if (Request.Form.Files != null && Request.Form.Files.Count > 0)
+                {
+                    foreach (var file in Request.Form.Files)
+                    {
+                        Console.WriteLine($"Mengupload file: {file.FileName}");
+                        
+                        // Upload each image
+                        string imageUrl = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "products");
+                        
+                        if (string.IsNullOrEmpty(imageUrl))
+                        {
+                            Console.WriteLine("Gagal mengunggah gambar!");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Gambar diunggah ke: {imageUrl}");
+                            
+                            // Save the first image URL to update the main product later
+                            if (firstImageUrl == null)
+                            {
+                                firstImageUrl = imageUrl;
+                            }
+                            
+                            // Save to image_products table
+                            bool isSaved = await _unitOfWorkRepository.Product.SaveProductImageAsync(productId, imageUrl);
+                            if (!isSaved)
+                            {
+                                Console.WriteLine($"Gagal menyimpan gambar {imageUrl} ke database!");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Gambar {imageUrl} berhasil disimpan ke database!");
+                            }
+                        }
+                    }
+                }
+                
+                // If there are no existing images and we've uploaded at least one image, 
+                // update the main product gambar_url field
+                if (firstImageUrl != null)
+                {
+                    // Check if the product already has a main image
+                    var product = await _unitOfWorkRepository.Product.GetProductByIdAsync(productId);
+                    if (product != null && string.IsNullOrEmpty(product.gambar_url))
+                    {
+                        // Update the main product with the first image
+                        var productToUpdate = new Product
+                        {
+                            Id = productId,
+                            NamaProduk = product.nama_produk,
+                            GambarUrl = firstImageUrl,
+                            Kategori = product.kategori,
+                            Deskripsi = product.deskripsi,
+                            Fitur = product.fitur,
+                            Spesifikasi = product.spesifikasi,
+                            Aplikasi = product.aplikasi,
+                            Tkdn = product.tkdn,
+                            Bmp = product.bmp,
+                            UpdatedAt = DateTime.Now
+                        };
+                        
+                        await _unitOfWorkRepository.Product.UpdateProductAsync(productToUpdate);
+                        Console.WriteLine($"Gambar utama produk diperbarui dengan: {firstImageUrl}");
+                    }
+                }
+            }
+            
+            return Json(response);
         }
-        response = await _unitOfWorkRepository.Product.SaveAsync(model);
-        return Json(response);
+        catch (Exception ex)
+        {
+            response.Code = 500;
+            response.Message = $"Terjadi kesalahan: {ex.Message}";
+            Console.WriteLine($"Error saat menyimpan produk: {ex.Message}");
+            return Json(response);
+        }
+    }
+
+    [HttpPost]
+    [Route("/Admin/Product/UploadProductImage")]
+    public async Task<IActionResult> UploadProductImage(IFormFile file, Guid productId)
+    {
+        AjaxResponse response = new();
+        
+        try
+        {
+            if (file != null)
+            {
+                // Upload the image
+                string imageUrl = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "products");
+                
+                // Save to image_products table
+                bool success = await _unitOfWorkRepository.Product.SaveProductImageAsync(productId, imageUrl);
+                
+                if (success)
+                {
+                    response.Code = 200;
+                    response.Message = "Image uploaded successfully";
+                    response.Data = imageUrl;
+                }
+                else
+                {
+                    response.Code = 500;
+                    response.Message = "Failed to save image record";
+                }
+            }
+            else
+            {
+                response.Code = 400;
+                response.Message = "No file uploaded";
+            }
+            
+            return Json(response);
+        }
+        catch (Exception ex)
+        {
+            response.Code = 500;
+            response.Message = $"Error uploading image: {ex.Message}";
+            return Json(response);
+        }
     }
 
     [HttpGet("product/edit/{id}")]
@@ -432,7 +562,39 @@ public class AdminController : Controller
 
         return Json(response);
     }
+
+    [HttpDelete]
+    [Route("/Admin/Product/DeleteImage/{imageId}")]
+    public async Task<IActionResult> DeleteProductImage(int imageId)
+    {
+        AjaxResponse response = new();
+        
+        try
+        {
+            bool success = await _unitOfWorkRepository.Product.DeleteProductImageAsync(imageId);
+            
+            if (success)
+            {
+                response.Code = 200;
+                response.Message = "Image deleted successfully";
+            }
+            else
+            {
+                response.Code = 500;
+                response.Message = "Failed to delete image";
+            }
+            
+            return Json(response);
+        }
+        catch (Exception ex)
+        {
+            response.Code = 500;
+            response.Message = $"Error deleting image: {ex.Message}";
+            return Json(response);
+        }
+    }
     #endregion
+    
     #region <=================================== Home ========================================>
     public IActionResult Main()
     {

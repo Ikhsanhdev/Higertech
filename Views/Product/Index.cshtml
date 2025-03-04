@@ -89,23 +89,8 @@
                             </div>
                             <!-- Image Thumbnails Carousel -->
                             <div class="product-thumbnails-container">
-                                <div class="thumbnails-wrapper">
-                                    <!-- Hardcoded sample thumbnails -->
-                                    <div class="thumbnail-item active" data-image="/assets/img/product/curahhujan.png">
-                                        <img src="/assets/img/product/curahhujan.png" alt="Product Thumbnail 1">
-                                    </div>
-                                    <div class="thumbnail-item" data-image="/assets/img/product/piscal.png">
-                                        <img src="/assets/img/product/piscal.png" alt="Product Thumbnail 2">
-                                    </div>
-                                    <div class="thumbnail-item" data-image="/assets/img/product/loggerlo1.png">
-                                        <img src="/assets/img/product/loggerlo1.png" alt="Product Thumbnail 3">
-                                    </div>
-                                    <div class="thumbnail-item" data-image="/assets/img/product/Reedswitch.png">
-                                        <img src="/assets/img/product/Reedswitch.png" alt="Product Thumbnail 4">
-                                    </div>
-                                    <div class="thumbnail-item" data-image="/assets/img/product/AwlrSonar.png">
-                                        <img src="/assets/img/product/AwlrSonar.png" alt="Product Thumbnail 5">
-                                    </div>
+                                <div class="thumbnails-wrapper" id="productThumbnails">
+                                    <!-- Thumbnails will be loaded dynamically -->
                                 </div>
                             </div>
                         </div>
@@ -115,16 +100,14 @@
                             <div class="product-info-container">
                                 <!-- Product Title -->
                                 <div class="product-section">
-                                    <h4 id="modalProductTitle" class="section-titles" style="color: #3b3b3b;">DATA LOGGER TELEMETRY HGT_L01</h4>
+                                    <h4 id="modalProductTitle" class="section-titles" style="color: #3b3b3b;"></h4>
                                     <hr>
                                 </div>
 
                                 <!-- Function Section -->
                                 <div class="product-section">
                                     <h5 class="section-titlel">DESKRIPSI ALAT</h5>
-                                    <p id="modalProductFunction" class="section-content">
-                                        DATA LOGGER HIGERTECH adalah instrumentasi yang dikembangkan untuk merekam, mengendalikan, dan menampilkan data-data dari berbagai macam sensor, seperti sensor Tinggi Muka Air Sungai, Bendung, Tampungan Bendungan, Saluran Irigasi dan lain-lain. Data yang terekam dapat disimpan dalam micro SD yang dapat dipasang dan dilepas kapan saja. Data Logger ini juga dilengkapi dengan sistem dengan kemampuan yang dapat terus dikembangkan sesuai ketersediaan sensor. Selain itu, data logger dapat mengirim data-data dari sensor ke server secara otomatis untuk ditampilkan pada platform data visual lebih lanjut.
-                                    </p>
+                                    <p id="modalProductFunction" class="section-content"></p>
                                     <hr>
                                 </div>
 
@@ -132,13 +115,7 @@
                                 <div class="product-section">
                                     <h5 class="section-titlel">FITUR</h5>
                                     <div id="productFeatures">
-                                        <div class="feature-item">Low Power</div>
-                                        <div class="feature-item">Berbasis GPRS 4G / Internet</div>
-                                        <div class="feature-item">SMS (Optional)</div>
-                                        <div class="feature-item">Setup Device is long into logger firmware through to a browser</div>
-                                        <div class="feature-item">Auto Reset Network</div>
-                                        <div class="feature-item">HTTP Postget Protocol & MQTT</div>
-                                        <div class="feature-item">CSV Formatt File Data Logger</div>
+                                        <!-- Features will be loaded dynamically -->
                                     </div>
                                     <hr>
                                 </div>
@@ -147,11 +124,7 @@
                                 <div class="product-section">
                                     <h5 class="section-titlel">SPESIFIKASI</h5>
                                     <div id="productSpecs">
-                                        <div class="feature-item">Single or Dual-Core 32-bit LX6 Microprocessor</div>
-                                        <div class="feature-item">Clock frequency up to 240 MHz</div>
-                                        <div class="feature-item">Supports 802.11 b/g/n Wi-Fi connectivity with speeds up to 150 Mbps</div>
-                                        <div class="feature-item">2 Digital Inputs PWM, SDI12, RS485</div>
-                                        <div class="feature-item">8 Analog Input 16 BIT</div>
+                                        <!-- Specs will be loaded dynamically -->
                                     </div>
                                     <hr>
                                 </div>
@@ -160,28 +133,16 @@
                                 <div class="product-section">
                                     <h5 class="section-titlel">APLIKASI</h5>
                                     <div id="productApplication">
-                                        <div class="feature-item">Pemantauan Daerah Aliran Sungai (DAS) Dan Wilayah Sungai (WS)</div>
-                                        <div class="feature-item">Bendungan, Bendang, Irigasi, Rawa, Air Baku, PLTA</div>
-                                        <div class="feature-item">Pengukuran Bidang Hidrologi, Pertanian</div>
-                                        <div class="feature-item">Pengukuran Bidang Klimatologi</div>
+                                        <!-- Applications will be loaded dynamically -->
                                     </div>
                                     <hr>
                                 </div>
 
                                 <!-- TKDN Section -->
-                                <div class="product-section">
+                                <div class="product-section" id="tkdnSection">
                                     <h5 class="section-titlel">TKDN</h5>
-                                    <p>Sertifikat Tingkat Komponen Dalam Negeri (TKDN) 40% <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech" class="btn btn-sm btn-outline-primary" target="_blank">TKDN KEMENPERIN</a></p>
-                                    <div class="row mt-3 tkdn-section">
-                                        <div class="col-md-4">
-                                            <img src="/assets/img/tkdn40.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <img src="/assets/img/produkindo100.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <img src="/assets/img/kan.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
-                                        </div>
+                                    <div id="tkdnContent">
+                                        <!-- TKDN content will be loaded dynamically -->
                                     </div>
                                     <hr>
                                 </div>
@@ -189,7 +150,7 @@
                                 <!-- Catalog Section -->
                                 <div class="product-section catalog-section">
                                     <h5 class="section-titlel">CATALOG</h5>
-                                    <p class="btn btn-sm btn-outline-primary"><a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank"></a>Download Catalog</p><br>
+                                    <p class="btn btn-sm btn-outline-primary"><a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">Download Catalog</a></p><br>
                                     <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">
                                         <img src="/assets/img/catalog2025.jpg" class="img-fluid" alt="Catalog 2025">
                                     </a>
@@ -208,35 +169,90 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize thumbnails functionality
-            initThumbnailsGallery();
+            // Initialize filter on load
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter.value !== 'semua') {
+                filterProducts(categoryFilter.value);
+            }
         });
 
-        // Function to initialize thumbnail gallery
-        function initThumbnailsGallery() {
-            // This will be called once the DOM is fully loaded
-            document.addEventListener('click', function(e) {
-                // Check if a thumbnail was clicked
-                if (e.target.closest('.thumbnail-item')) {
-                    const thumbnailItem = e.target.closest('.thumbnail-item');
-                    const imageUrl = thumbnailItem.dataset.image;
-                    
-                    // Update main image
-                    const mainImage = document.getElementById('modalProductImage');
-                    if (mainImage) {
-                        mainImage.src = imageUrl;
-                        
-                        // Update active state
-                        document.querySelectorAll('.thumbnail-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        thumbnailItem.classList.add('active');
-                    }
+        // Function to process text content with bullet points and handle '/' as line breaks
+        function processTextWithBullets(text) {
+            if (!text) return '';
+            
+            // Check if the text already contains HTML bullet points
+            if (text.includes('<li>') || text.includes('<ul>')) {
+                return text;
+            }
+            
+            // Replace '/' with newlines first, then split by newlines or bullet characters
+            text = text.replace(/\//g, '\n');
+            const lines = text.split(/\r?\n|•/).filter(line => line.trim() !== '');
+            
+            // Return items as feature divs
+            return lines.map(line => {
+                line = line.trim();
+                if (line.startsWith('-')) line = line.substring(1).trim();
+                if (line) {
+                    return `<div class="feature-item">${line}</div>`;
                 }
+                return '';
+            }).join('');
+        }
+
+        // Function to handle product thumbnails
+        function renderProductThumbnails(images, mainImageUrl) {
+            const thumbnailsContainer = document.getElementById('productThumbnails');
+            thumbnailsContainer.innerHTML = '';
+            
+            if (!images || images.length === 0) {
+                // If no images, add default placeholder
+                const defaultImageUrl = mainImageUrl || '/assets/placeholder.png';
+                thumbnailsContainer.innerHTML = `
+                    <div class="thumbnail-item active" data-image="${defaultImageUrl}">
+                        <img src="${defaultImageUrl}" alt="Product Image">
+                    </div>`;
+                return;
+            }
+            
+            // Add all available images
+            images.forEach((image, index) => {
+                const imageUrl = image.gambar_url?.startsWith('/') ? 
+                    image.gambar_url : '/' + image.gambar_url;
+                
+                const thumbnailDiv = document.createElement('div');
+                thumbnailDiv.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                thumbnailDiv.dataset.image = imageUrl;
+                thumbnailDiv.innerHTML = `<img src="${imageUrl}" alt="Product Thumbnail ${index + 1}">`;
+                thumbnailsContainer.appendChild(thumbnailDiv);
             });
         }
 
-        // Update the showProductDetail function to handle dynamic thumbnails
+        // Function to render TKDN content conditionally
+        function renderTkdnContent(tkdnValue) {
+            const tkdnContainer = document.getElementById('tkdnContent');
+            
+            if (!tkdnValue || tkdnValue === '-') {
+                tkdnContainer.innerHTML = '<p>-</p>';
+                return;
+            }
+            
+            tkdnContainer.innerHTML = `
+                <p>Sertifikat Tingkat Komponen Dalam Negeri (TKDN) ${tkdnValue} <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech" class="btn btn-sm btn-outline-primary" target="_blank">TKDN KEMENPERIN</a></p>
+                <div class="row mt-3 tkdn-section">
+                    <div class="col-md-4">
+                        <img src="/assets/img/tkdn40.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/assets/img/produkindo100.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/assets/img/kan.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                </div>`;
+        }
+
+        // Main function to display product details
         async function showProductDetail(productId) {
             try {
                 const response = await fetch(`/Product/GetProductById/${productId}`);
@@ -247,30 +263,46 @@
                 
                 if (product) {
                     // Set title
-                    document.getElementById('modalProductTitle').textContent = product.nama_produk;
+                    document.getElementById('modalProductTitle').textContent = product.nama_produk || '';
                     
-                    // Set main image
-                    const imageUrl = product.gambar_url?.startsWith('/') ? 
-                        product.gambar_url : 
-                        '/' + product.gambar_url;
-                    document.getElementById('modalProductImage').src = imageUrl;
-                    
-                    // Set function (description)
-                    if (document.getElementById('modalProductFunction')) {
-                        document.getElementById('modalProductFunction').textContent = product.deskripsi || '';
+                    // Set main image (use first image from product_images or fallback to product.gambar_url)
+                    let mainImageUrl;
+                    if (product.product_images && product.product_images.length > 0) {
+                        mainImageUrl = product.product_images[0].gambar_url;
+                    } else {
+                        mainImageUrl = product.gambar_url;
                     }
                     
-                    // In a real implementation, you would dynamically generate thumbnails
-                    // based on product images from your database
-                    // For now, we're using hardcoded thumbnails
-                    
-                    // Set the first thumbnail as active
-                    const thumbnails = document.querySelectorAll('.thumbnail-item');
-                    if (thumbnails.length > 0) {
-                        thumbnails.forEach(item => item.classList.remove('active'));
-                        thumbnails[0].classList.add('active');
+                    if (mainImageUrl) {
+                        mainImageUrl = mainImageUrl.startsWith('/') ? mainImageUrl : '/' + mainImageUrl;
+                    } else {
+                        mainImageUrl = '/assets/placeholder.png';
                     }
                     
+                    document.getElementById('modalProductImage').src = mainImageUrl;
+                    
+                    // Render thumbnails
+                    renderProductThumbnails(product.product_images, mainImageUrl);
+                    
+                    // Set description
+                    document.getElementById('modalProductFunction').innerHTML = product.deskripsi || 'No description available';
+                    
+                    // Set features
+                    document.getElementById('productFeatures').innerHTML = 
+                        product.fitur ? processTextWithBullets(product.fitur) : 'No features available';
+                    
+                    // Set specifications
+                    document.getElementById('productSpecs').innerHTML = 
+                        product.spesifikasi ? processTextWithBullets(product.spesifikasi) : 'No specifications available';
+                    
+                    // Set applications
+                    document.getElementById('productApplication').innerHTML = 
+                        product.aplikasi ? processTextWithBullets(product.aplikasi) : 'No application information available';
+                    
+                    // Set TKDN 
+                    renderTkdnContent(product.tkdn);
+                    
+                    // Show modal
                     const modal = new bootstrap.Modal(document.getElementById('productModal'));
                     modal.show();
                 }
@@ -280,18 +312,43 @@
             }
         }
 
-        document.getElementById('categoryFilter').addEventListener('change', function() {
-            const selectedCategory = this.value.toLowerCase();
-            const products = document.querySelectorAll('[data-category]');
+        // Handle thumbnail clicks
+        document.addEventListener('click', function(e) {
+            // Check if a thumbnail was clicked
+            if (e.target.closest('.thumbnail-item')) {
+                const thumbnailItem = e.target.closest('.thumbnail-item');
+                const imageUrl = thumbnailItem.dataset.image;
+                
+                // Update main image
+                const mainImage = document.getElementById('modalProductImage');
+                if (mainImage) {
+                    mainImage.src = imageUrl;
+                    
+                    // Update active state
+                    document.querySelectorAll('.thumbnail-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    thumbnailItem.classList.add('active');
+                }
+            }
+        });
 
+        // Filter products by category
+        function filterProducts(category) {
+            const products = document.querySelectorAll('[data-category]');
             products.forEach(product => {
                 const productCategory = product.dataset.category;
-                if (selectedCategory === 'semua' || productCategory === selectedCategory) {
+                if (category === 'semua' || productCategory === category) {
                     product.closest('.col-md-4').style.display = 'block';
                 } else {
                     product.closest('.col-md-4').style.display = 'none';
                 }
             });
+        }
+
+        // Category filter event listener
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            filterProducts(this.value.toLowerCase());
         });
     </script>
 }

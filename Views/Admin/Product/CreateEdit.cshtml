@@ -6,6 +6,7 @@
 }
 @section VendorStyles {
     @* <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" /> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
     <style>
         .image-preview {
             max-width: 200px;
@@ -16,10 +17,45 @@
         .preview-container {
             margin-top: 10px;
         }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .image-item {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .image-item .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+        }
     </style>
 }
 @section VendorScripts {
     <script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 }
 
 @* ************** Content ************** *@
@@ -47,12 +83,14 @@
                             data-parsley-required="true"
                             data-parsley-required-message="Nama produk harus diisi"
                             data-parsley-trigger="change">
+                        <div id="productNamaHelp" class="form-text">Tuliskan nama produk.</div>
                     </div>
 
                     <div class="mt-3">
                         <label for="productDeskripsi" class="form-label">Deskripsi Produk</label>
-                        <input type="text" asp-for="deskripsi" class="form-control" id="deskripsi"
-                            placeholder="Masukkan keterangan">
+                        <input type="text" asp-for="deskripsi" class="form-control" id="deskripsi" rows="3"
+                            placeholder="Masukkan deskripsi produk">
+                        <div id="productDeskripsiHelp" class="form-text">Tuliskan deskripsi untuk produk.</div>
                     </div>
 
                     <div class="mt-3">
@@ -62,29 +100,73 @@
                             <option value="hidrologi">hidrologi</option>
                             <option value="klimatologi">klimatologi</option>
                         </select>
+                        <div id="kategoriHelp" class="form-text">Pilih kategori untuk produk.</div>
+                    </div>
+                    
+                    <!-- New Fields -->
+                    <div class="mt-3">
+                        <label for="fitur" class="form-label">Fitur</label>
+                        <textarea asp-for="fitur" class="form-control" id="fitur" rows="3"
+                            placeholder="Masukkan fitur produk"></textarea>
+                        <div id="fiturHelp" class="form-text">Tuliskan fitur apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="spesifikasi" class="form-label">Spesifikasi</label>
+                        <textarea asp-for="spesifikasi" class="form-control" id="spesifikasi" rows="3"
+                            placeholder="Masukkan spesifikasi produk"></textarea>
+                        <div id="spesifikasiHelp" class="form-text">Tuliskan spesifikasi apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="aplikasi" class="form-label">Aplikasi</label>
+                        <textarea asp-for="aplikasi" class="form-control" id="aplikasi" rows="3"
+                            placeholder="Masukkan aplikasi produk"></textarea>
+                        <div id="aplikasiHelp" class="form-text">Tuliskan aplikasi apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="tkdn" class="form-label">TKDN</label>
+                        <input type="text" asp-for="tkdn" class="form-control" id="tkdn"
+                            placeholder="Masukkan TKDN">
+                        <div id="tkdnHelp" class="form-text">Tuliskan tkdn pada produk. *Note (berikan % di akhir contoh (40%) dan jika tidak tkdn cukup berikan (-)).</div>
                     </div>
 
-                    <div id="previewImg"></div>
-                    @* <div class="mt-3">
-                        <label for="articleImage" class="form-label">URL Gambar</label>
-                        <input type="text" asp-for="img_url" class="form-control" id="img_url" placeholder="Masukkan URL Gambar" />
-                        <div id="articleImageHelp" class="form-text">Masukkan URL gambar untuk project.</div>
-                    </div> *@
-                    <input type="hidden" asp-for="gambar_url" class="form-control" id="gambar_url"
-                        placeholder="Masukkan URL Gambar" />
-                    @if (Model.gambar_url != null)
+                    <div class="mt-3">
+                        <label for="bmp" class="form-label">BMP</label>
+                        <input type="text" asp-for="bmp" class="form-control" id="bmp"
+                            placeholder="Masukkan BMP">
+                        <div id="bmpHelp" class="form-text">Tuliskan bmp pada produk. *Note (berikan % di akhir contoh (40%) dan jika tidak tkdn cukup berikan (-)).</div>
+                    </div>
+
+                    <!-- Image Gallery for Existing Images -->
+                    @if (Model.product_images != null && Model.product_images.Count > 0)
                     {
                         <div class="mt-3">
-                            <label for="articleImage" class="form-label">Gambar Saat Ini</label><br />
-                            <img src="@Url.Content(Model.gambar_url)" class="img-fluid" style="height: 20vh; width: 20vh;"
-                                alt="Gambar Product" />
+                            <label class="form-label">Gambar Saat Ini</label>
+                            <div class="image-gallery" id="existing-images">
+                                @foreach (var img in Model.product_images)
+                                {
+                                    <div class="image-item" data-id="@img.id" data-url="@img.gambar_url">
+                                        <img src="@Url.Content(img.gambar_url)" alt="Gambar Produk" />
+                                        <span class="remove-image" onclick="removeExistingImage(this)">×</span>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
-
+                    
+                    <!-- Dropzone for Multiple Image Upload -->
                     <div class="mt-3">
-                        <input type="file" class="form-control" id="file_img" name="file_img"
-                            placeholder="Masukkan URL Gambar" />
-                        <div id="articleImageHelp" class="form-text">Masukkan URL gambar untuk Produk.</div>
+                        <label class="form-label">Upload Gambar Produk (Maks. 10)</label>
+                        <div id="dropzone-upload" class="dropzone">
+                            <div class="dz-message needsclick">
+                                <i class="bx bx-cloud-upload"></i>
+                                <h5>Tarik foto ke sini atau klik untuk upload</h5>
+                                <span class="text-muted">Upload hingga 10 foto produk</span>
+                            </div>
+                        </div>
+                        <div id="upload-preview-container" class="mt-2"></div>
                     </div>
                     <div class="mt-3 float-end">
                         <button type="submit" class="btn btn-primary">Save</button>
@@ -105,6 +187,56 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Store uploaded files
+        let uploadedFiles = [];
+        // Track existing images to be removed
+        let removedImages = [];
+        
+        // Initialize Dropzone
+        let myDropzone = new Dropzone("#dropzone-upload", {
+            url: "/Admin/Product/UploadProductImage", // This will be handled via formData instead
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            maxFiles: 10,
+            acceptedFiles: "image/*",
+            maxFilesize: 5, // MB
+            init: function() {
+                this.on("addedfile", function(file) {
+                    const existingCount = document.querySelectorAll('#existing-images .image-item').length;
+                    const totalCount = this.files.length + existingCount - removedImages.length;
+                    
+                    if (totalCount > 10) {
+                        this.removeFile(file);
+                        showMessage("error", "Batas Upload", "Maksimal 10 gambar yang dapat diupload");
+                    } else {
+                        uploadedFiles.push(file);
+                    }
+                });
+                
+                this.on("removedfile", function(file) {
+                    uploadedFiles = uploadedFiles.filter(f => f !== file);
+                });
+                
+                // Limit new uploads based on existing images
+                const existingImages = document.querySelectorAll('#existing-images .image-item').length;
+                this.options.maxFiles = 10 - existingImages;
+            }
+        });
+        
+        // Remove existing image
+        function removeExistingImage(element) {
+            const imageItem = element.parentElement;
+            const imageUrl = imageItem.getAttribute('data-url');
+            
+            // Add to removed images list
+            removedImages.push(imageUrl);
+            
+            // Remove from display
+            imageItem.remove();
+            
+            // Update Dropzone max files
+            myDropzone.options.maxFiles = 10 - document.querySelectorAll('#existing-images .image-item').length + removedImages.length;
+        }
 
         window.createEditForm = (form, evt) => {
             evt.preventDefault();
@@ -114,7 +246,7 @@
             var id = document.getElementById("id").value;
             var productName = document.getElementById("nama_produk").value;
 
-            // First check if the product name is duplicate
+            // Periksa apakah nama produk sudah digunakan
             axios.get(`/Admin/Product/CheckDuplicateName`, {
                 params: {
                     productName: productName,
@@ -128,7 +260,7 @@
                     return;
                 }
 
-                // Continue with form submission if name is not duplicate
+                // Jika valid, lanjutkan dengan pengiriman data
                 $(form).parsley().validate();
                 if ($(form).parsley().isValid()) {
                     beforeLoadingButton(btnSubmit);
@@ -137,12 +269,27 @@
                     formData.append("nama_produk", productName);
                     formData.append("deskripsi", document.getElementById("deskripsi").value);
                     formData.append("kategori", document.getElementById("kategori").value);
-                    formData.append("gambar_url", document.getElementById("gambar_url").value);
-                    if ($("#file_img")[0].files.length > 0) {
-                        formData.append("file", $("#file_img")[0].files[0]);
+                    formData.append("fitur", document.getElementById("fitur").value);
+                    formData.append("spesifikasi", document.getElementById("spesifikasi").value);
+                    formData.append("aplikasi", document.getElementById("aplikasi").value);
+                    formData.append("tkdn", document.getElementById("tkdn").value);
+                    formData.append("bmp", document.getElementById("bmp").value);
+
+                    // Add removed images to formData
+                    if (removedImages.length > 0) {
+                        removedImages.forEach((url, index) => {
+                            formData.append(`removed_images[${index}]`, url);
+                        });
                     }
 
-                    console.log("FormData:", Object.fromEntries(formData.entries()));
+                    // Add files from Dropzone
+                    if (uploadedFiles.length > 0) {
+                        uploadedFiles.forEach(file => {
+                            formData.append("files", file);
+                        });
+                    }
+
+                    console.log("FormData entries:", Array.from(formData.entries()).map(e => e[0]));
 
                     postData("/Admin/Product", formData)
                         .then((res) => {

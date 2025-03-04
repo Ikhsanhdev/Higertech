@@ -16,6 +16,10 @@ public interface IProductRepository
     Task<Product?> UpdateProductAsync(Product product);
     Task<bool> DeleteProductAsync(Guid id);
     Task<bool> IsProductNameExistsAsync(string productName, Guid? excludeId = null);
+    Task<List<ImageProductVM>> GetProductImagesAsync(Guid productId);
+    Task<bool> SaveProductImageAsync(Guid productId, string imageUrl);
+    Task<bool> UpdateMainProductImageAsync(Guid productId, string imageUrl);
+    Task<bool> DeleteProductImageAsync(int imageId);
 }
 
 public class ProductRepository : IProductRepository
@@ -33,16 +37,21 @@ public class ProductRepository : IProductRepository
             using var connection = new NpgsqlConnection(_connectionString);
             var query = @$"
                     SELECT
-                        id AS ""Id"",
-                        nama_produk AS ""NamaProduk"",
-                        gambar_url AS ""GambarUrl"",
-                        kategori AS ""Kategori"",
-                        deskripsi AS ""Deskripsi"",
-                        created_at AS ""CreatedAt"",
-                        updated_at AS ""UpdatedAt""
-                    FROM products
-                    WHERE deleted_at IS NULL
-                    ORDER BY created_at DESC;";
+                        p.id AS ""Id"",
+                        p.nama_produk AS ""NamaProduk"",
+                        p.kategori AS ""Kategori"",
+                        p.deskripsi AS ""Deskripsi"",
+                        p.fitur AS ""Fitur"",
+                        p.spesifikasi AS ""Spesifikasi"",
+                        p.aplikasi AS ""Aplikasi"",
+                        p.tkdn AS ""Tkdn"",
+                        p.bmp AS ""Bmp"",
+                        p.created_at AS ""CreatedAt"",
+                        p.updated_at AS ""UpdatedAt"",
+                        (SELECT img.gambar_url FROM image_products img WHERE img.id_product = p.id LIMIT 1) AS ""GambarUrl""
+                    FROM products p
+                    WHERE p.deleted_at IS NULL
+                    ORDER BY p.created_at DESC;";
 
             var result = await connection.QueryAsync<Product>(query);
             return result.ToList();
@@ -61,7 +70,12 @@ public class ProductRepository : IProductRepository
             using var connection = new NpgsqlConnection(_connectionString);
             List<dynamic> result = new List<dynamic>();
 
-            var query = @"SELECT * FROM products ";
+            var query = @"
+                SELECT 
+                    p.*,
+                    (SELECT img.gambar_url FROM image_products img 
+                     WHERE img.id_product = p.id ORDER BY img.id LIMIT 1) AS main_image_url 
+                FROM products p ";
 
             var parameters = new DynamicParameters();
             var whereConditions = new List<string>();
@@ -74,13 +88,13 @@ public class ProductRepository : IProductRepository
                 }
 
                 whereConditions.Add(@"
-                    (LOWER(nama_produk) LIKE @SearchValue OR
-                    LOWER(kategori) LIKE @SearchValue OR
-                    LOWER(deskripsi) LIKE @SearchValue)");
+                    (LOWER(p.nama_produk) LIKE @SearchValue OR
+                    LOWER(p.kategori) LIKE @SearchValue OR
+                    LOWER(p.deskripsi) LIKE @SearchValue)");
                 parameters.Add("@SearchValue", "%" + request.SearchValue.ToLower() + "%");
             }
             
-            whereConditions.Add(@" deleted_at IS NULL");
+            whereConditions.Add(@" p.deleted_at IS NULL");
 
             var whereClause = whereConditions.Count > 0 ? "WHERE " + string.Join(" AND ", whereConditions) : "";
 
@@ -91,6 +105,7 @@ public class ProductRepository : IProductRepository
             total = connection.ExecuteScalar<int>(sql_count, parameters);
 
             query += @" 
+            ORDER BY p.created_at DESC
             OFFSET @Skip ROWS FETCH NEXT @PageSize ROWS ONLY;";
             parameters.Add("@Skip", request.Skip);
             parameters.Add("@PageSize", request.PageSize);
@@ -116,7 +131,16 @@ public class ProductRepository : IProductRepository
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
+                
+                // Get product data
                 ProductVM? product = await connection.QuerySingleOrDefaultAsync<ProductVM>(query, new { Id = id });
+                
+                if (product != null)
+                {
+                    // Get product images
+                    product.product_images = (await GetProductImagesAsync(id)).ToList();
+                }
+                
                 return product;
             }
         }
@@ -127,57 +151,15 @@ public class ProductRepository : IProductRepository
         }
     }
 
-    // public async Task<AjaxResponse> SaveAsync(ProductVM product)
-    // {
-    //     AjaxResponse result = new();
-    //     try
-    //     {
-    //         string query;
-    //         string status = "Tambah";
-
-    //         if (product.id == Guid.Empty)
-    //         {
-    //             product.created_at = DateTime.Now;
-    //             query = @"
-    //                 INSERT INTO products 
-    //                 (nama_produk, gambar_url, kategori, deskripsi, created_at)
-    //                 VALUES 
-    //                 (@nama_produk, @gambar_url, @kategori, @deskripsi, @created_at)
-    //                 RETURNING *;";
-    //         }
-    //         else
-    //         {
-    //             status = "Memperbarui";
-    //             product.updated_at = DateTime.Now;
-    //             query = @"
-    //                 UPDATE products
-    //                 SET nama_produk = @nama_produk, 
-    //                     gambar_url = @gambar_url, 
-    //                     kategori = @kategori, 
-    //                     deskripsi = @deskripsi,
-    //                     updated_at = @updated_at
-    //                 WHERE id = @Id
-    //                 RETURNING *;";
-    //         }
-
-    //         using (var connection = new NpgsqlConnection(_connectionString))
-    //         {
-    //             var data = await connection.ExecuteAsync(query, product);
-    //             result.Code = 200;
-    //             result.Message = $"{status} data berhasil";
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         result.Code = 500;
-    //         result.Message = $"Terjadi Kesalahan.\nError: {ex}";
-    //     }
-    //     return result;
-    // }
-
     public async Task<AjaxResponse> SaveAsync(ProductVM product)
     {
         AjaxResponse result = new();
+        
+        // Create transaction to ensure all operations succeed or fail together
+        using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        using var transaction = connection.BeginTransaction();
+        
         try
         {
             // Check for duplicate name first
@@ -189,46 +171,73 @@ public class ProductRepository : IProductRepository
                 return result;
             }
 
-            string query;
             string status = "Tambah";
+            Guid productId = product.id;
 
             if (product.id == Guid.Empty)
             {
+                // Insert new product
+                productId = Guid.NewGuid();
+                product.id = productId;
                 product.created_at = DateTime.Now;
-                query = @"
+                
+                const string insertQuery = @"
                     INSERT INTO products 
-                    (nama_produk, gambar_url, kategori, deskripsi, created_at)
+                    (id, nama_produk, kategori, deskripsi, fitur, spesifikasi, aplikasi, tkdn, bmp, created_at)
                     VALUES 
-                    (UPPER(@nama_produk), @gambar_url, @kategori, @deskripsi, @created_at)
-                    RETURNING *;";
+                    (@id, UPPER(@nama_produk), @kategori, @deskripsi, @fitur, @spesifikasi, @aplikasi, @tkdn, @bmp, @created_at);";
+                
+                await connection.ExecuteAsync(insertQuery, product, transaction);
             }
             else
             {
+                // Update existing product
                 status = "Memperbarui";
                 product.updated_at = DateTime.Now;
-                query = @"
+                
+                const string updateQuery = @"
                     UPDATE products
                     SET nama_produk = UPPER(@nama_produk), 
-                        gambar_url = @gambar_url, 
                         kategori = @kategori, 
                         deskripsi = @deskripsi,
+                        fitur = @fitur, 
+                        spesifikasi = @spesifikasi, 
+                        aplikasi = @aplikasi, 
+                        tkdn = @tkdn,
+                        bmp = @bmp, 
                         updated_at = @updated_at
-                    WHERE id = @Id
-                    RETURNING *;";
+                    WHERE id = @id;";
+                
+                await connection.ExecuteAsync(updateQuery, product, transaction);
             }
-
-            using (var connection = new NpgsqlConnection(_connectionString))
+            
+            // Process removed images if any
+            if (product.removed_images != null && product.removed_images.Count > 0)
             {
-                var data = await connection.ExecuteAsync(query, product);
-                result.Code = 200;
-                result.Message = $"{status} data berhasil";
+                const string deleteImagesQuery = @"
+                    DELETE FROM image_products 
+                    WHERE id_product = @productId AND gambar_url = ANY(@removedImages);";
+                
+                await connection.ExecuteAsync(deleteImagesQuery, 
+                    new { productId, removedImages = product.removed_images.ToArray() }, 
+                    transaction);
             }
+            
+            // Commit the transaction
+            transaction.Commit();
+            
+            result.Code = 200;
+            result.Message = $"{status} data berhasil";
+            result.Data = productId; // Return product ID for further processing if needed
         }
         catch (Exception ex)
         {
+            transaction.Rollback();
             result.Code = 500;
-            result.Message = $"Terjadi Kesalahan.\nError: {ex}";
+            result.Message = $"Terjadi Kesalahan.\nError: {ex.Message}";
+            Log.Error(ex, "Error saving product: {Message}", ex.Message);
         }
+        
         return result;
     }
 
@@ -236,11 +245,16 @@ public class ProductRepository : IProductRepository
     {
         const string query = @"
             UPDATE products
-                    SET nama_produk = @nama_produk, 
-                        gambar_url = @gambar_url, 
-                        kategori = @kategori, 
-                        deskripsi = @deskripsi,
-                        updated_at = @updated_at
+                    SET nama_produk = @NamaProduk, 
+                        gambar_url = @GambarUrl, 
+                        kategori = @Kategori, 
+                        deskripsi = @Deskripsi,
+                        fitur = @Fitur, 
+                        spesifikasi = @Spesifikasi, 
+                        aplikasi = @Aplikasi, 
+                        tkdn = @Tkdn,
+                        bmp = @Bmp, 
+                        updated_at = @UpdatedAt
                     WHERE id = @Id
             RETURNING *;";
 
@@ -261,22 +275,29 @@ public class ProductRepository : IProductRepository
 
     public async Task<bool> DeleteProductAsync(Guid id)
     {
-        const string query = @"
-            UPDATE products
-            SET deleted_at = @Date_now
-            WHERE id = @Id;";
-
+        using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        using var transaction = connection.BeginTransaction();
+        
         try
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-                int affectedRows = await connection.ExecuteAsync(query, new { Id = id, Date_now = DateTime.Now });
-                return affectedRows > 0;
-            }
+            // Soft delete the product
+            const string productQuery = @"
+                UPDATE products
+                SET deleted_at = @Date_now
+                WHERE id = @Id;";
+            
+            await connection.ExecuteAsync(productQuery, new { Id = id, Date_now = DateTime.Now }, transaction);
+            
+            // Don't delete the images - soft delete only the product
+            // This helps maintain data integrity if needed for backup/recovery
+            
+            transaction.Commit();
+            return true;
         }
         catch (Exception ex)
         {
+            transaction.Rollback();
             Console.WriteLine($"Error deleting product: {ex.Message}");
             return false;
         }
@@ -309,6 +330,117 @@ public class ProductRepository : IProductRepository
         {
             Log.Error(ex, "Error checking product name existence: {Message}", ex.Message);
             throw;
+        }
+    }
+    
+    public async Task<List<ImageProductVM>> GetProductImagesAsync(Guid productId)
+    {
+        const string query = @"
+            SELECT 
+                id,
+                id_product,
+                gambar_url
+            FROM image_products 
+            WHERE id_product = @ProductId 
+            ORDER BY id;";
+            
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            var images = await connection.QueryAsync<ImageProductVM>(query, new { ProductId = productId });
+            return images.ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error getting product images: {Message}", ex.Message);
+            return new List<ImageProductVM>();
+        }
+    }
+    
+    // In SaveProductImageAsync method, after saving the image
+    public async Task<bool> SaveProductImageAsync(Guid productId, string imageUrl)
+    {
+        const string query = @"
+            INSERT INTO image_products
+            (id_product, gambar_url)
+            VALUES
+            (@productId, @imageUrl);";
+            
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.ExecuteAsync(query, new { 
+                productId, 
+                imageUrl, 
+                createdAt = DateTime.Now 
+            });
+
+            // Check if this is the first image for the product
+            const string checkQuery = @"
+                SELECT COUNT(*) FROM image_products 
+                WHERE id_product = @productId";
+            
+            int imageCount = await connection.ExecuteScalarAsync<int>(checkQuery, new { productId });
+            
+            // If this is the first image, update the gambar_url in the products table
+            if (imageCount == 1)
+            {
+                const string updateMainImageQuery = @"
+                    UPDATE products 
+                    SET gambar_url = @imageUrl
+                    WHERE id = @productId";
+                    
+                await connection.ExecuteAsync(updateMainImageQuery, new { productId, imageUrl });
+            }
+
+            Console.WriteLine($"Gambar {imageUrl} berhasil disimpan ke database untuk produk {productId}");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error menyimpan gambar ke database: {ex.Message}");
+            Log.Error(ex, "Error saving product image: {Message}", ex.Message);
+            return false;
+        }
+    }
+
+    // Add this method to ProductRepository
+    public async Task<bool> UpdateMainProductImageAsync(Guid productId, string imageUrl)
+    {
+        const string query = @"
+            UPDATE products
+            SET gambar_url = @imageUrl
+            WHERE id = @productId;";
+            
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.ExecuteAsync(query, new { productId, imageUrl });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error updating main product image: {Message}", ex.Message);
+            return false;
+        }
+    }
+    
+    public async Task<bool> DeleteProductImageAsync(int imageId)
+    {
+        const string query = @"
+            DELETE FROM image_products
+            WHERE id = @imageId;";
+            
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.ExecuteAsync(query, new { imageId });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error deleting product image: {Message}", ex.Message);
+            return false;
         }
     }
 }
