@@ -579,7 +579,7 @@ h6 {
 }
 
 .footer .footer-links ul a:hover {
-  color: var(--accent-color);
+  color: var(--hg-second-color);
 }
 
 .footer .footer-contact p {

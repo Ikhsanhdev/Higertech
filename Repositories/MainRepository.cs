@@ -16,6 +16,7 @@ public interface IMainRepository
     Task<Main?> UpdateMainAsync(Main main);
     Task<bool> DeleteMainAsync(Guid id);
     Task<AjaxResponse> ToggleHideAsync(Guid id);
+    Task<dynamic> GetFooterAsync();
 }
 
 public class MainRepository : IMainRepository
@@ -51,7 +52,7 @@ public class MainRepository : IMainRepository
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error fetching main data: {@ExceptionDetails}", 
+            Log.Error(ex, "Error fetching main data: {@ExceptionDetails}",
                 new { ex.Message, ex.StackTrace });
             throw;
         }
@@ -82,7 +83,7 @@ public class MainRepository : IMainRepository
                     LOWER(description) LIKE @SearchValue)");
                 parameters.Add("@SearchValue", "%" + request.SearchValue.ToLower() + "%");
             }
-            
+
             whereConditions.Add(@" deleted_at IS NULL");
 
             var whereClause = whereConditions.Count > 0 ? "WHERE " + string.Join(" AND ", whereConditions) : "";
@@ -170,7 +171,7 @@ public class MainRepository : IMainRepository
             {
                 await connection.OpenAsync();
                 var data = await connection.QuerySingleOrDefaultAsync(query, main);
-                
+
                 if (data != null)
                 {
                     result.Code = 200;
@@ -187,7 +188,7 @@ public class MainRepository : IMainRepository
         {
             result.Code = 500;
             result.Message = $"Terjadi Kesalahan.\nError: {ex.Message}";
-            Log.Error(ex, "Error in SaveAsync: {@ExceptionDetails}", 
+            Log.Error(ex, "Error in SaveAsync: {@ExceptionDetails}",
                 new { main.id, main.title, Error = ex.Message });
         }
         return result;
@@ -260,7 +261,7 @@ public class MainRepository : IMainRepository
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
-                
+
                 // Get current state
                 var currentState = await connection.QuerySingleOrDefaultAsync<string>(getCurrentState, new { Id = id });
                 if (currentState == null)
@@ -272,9 +273,10 @@ public class MainRepository : IMainRepository
 
                 // Toggle state
                 var newState = currentState == "on" ? "off" : "on";
-                
-                var data = await connection.QuerySingleOrDefaultAsync(updateQuery, new { 
-                    Id = id, 
+
+                var data = await connection.QuerySingleOrDefaultAsync(updateQuery, new
+                {
+                    Id = id,
                     NewState = newState,
                     UpdatedAt = DateTime.UtcNow
                 });
@@ -295,9 +297,52 @@ public class MainRepository : IMainRepository
         {
             result.Code = 500;
             result.Message = $"Terjadi Kesalahan.\nError: {ex.Message}";
-            Log.Error(ex, "Error in ToggleHideAsync: {@ExceptionDetails}", 
+            Log.Error(ex, "Error in ToggleHideAsync: {@ExceptionDetails}",
                 new { Id = id, Error = ex.Message });
         }
         return result;
+    }
+
+    public async Task<dynamic> GetFooterAsync()
+    {
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+           var result = await connection.QueryAsync<dynamic>("SELECT name, value FROM footer_contact WHERE deleted_at IS NULL;");
+
+            var contactData = new Dictionary<string, string>();
+        var socialLinks = new Dictionary<string, string>();
+
+        foreach (var item in result)
+        {
+            string name = item.name.ToLower();
+            string value = item.value;
+
+            // Jika value adalah URL, masukkan ke socialLinks
+            if (value.StartsWith("http"))
+            {
+                socialLinks[name] = value;
+            }
+            else
+            {
+                contactData[name] = value;
+            }
+        }
+
+        var response = new
+        {
+            contact = contactData,
+            social_links = socialLinks
+        };
+
+        return response;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error fetching footer data: {@ExceptionDetails}",
+                new { ex.Message, ex.StackTrace });
+            throw;
+
+        }
     }
 }
