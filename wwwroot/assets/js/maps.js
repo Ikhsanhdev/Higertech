@@ -91,28 +91,34 @@ function createDetailPanel(reading) {
     GetDataStation(map);
 
     // Tambahkan legend di sini
+    var wrapperDiv = document.createElement('div');
+    wrapperDiv.style.padding = '10px';
+
+    // Buat elemen legend
     var legendDiv = document.createElement('div');
     legendDiv.innerHTML = `
-        <div style="background-color: white; padding: 10px;">
-        <div style="display: flex; align-items: center;">
-            <img src="/assets/img/duga.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
-            <div style="font-weight: bold;">Pos Duga Air (PDA/AWLR)</div>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <img src="/assets/img/curah.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
-            <div style="font-weight: bold;">Pos Curah Hujan (PCH/ARR)</div>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <img src="/assets/img/awlr.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
-            <div style="font-weight: bold;">Pos PDA & PCH</div>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <img src="/assets/img/klimatologi.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
-            <div style="font-weight: bold;">Pos Klimatologi (AWS)</div>
-        </div>
+        <div style="background-color: white; padding: 10px; border-radius: 5px;">
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <img src="/assets/img/duga.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
+                <div style="font-weight: bold;">Pos Duga Air (PDA/AWLR)</div>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <img src="/assets/img/curah.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
+                <div style="font-weight: bold;">Pos Curah Hujan (PCH/ARR)</div>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <img src="/assets/img/awlr.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
+                <div style="font-weight: bold;">Pos PDA & PCH</div>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <img src="/assets/img/klimatologi.png" style="width: 20px; height: 25px; margin-right: 5px; border-radius: 50%;">
+                <div style="font-weight: bold;">Pos Klimatologi (AWS)</div>
+            </div>
         </div>
     `;
-    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legendDiv);
+
+    wrapperDiv.appendChild(legendDiv);
+    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(wrapperDiv);
     }
 
     let currentInfoWindow = null;

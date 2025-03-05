@@ -9,9 +9,9 @@
 }
 
 .gm-style-mtc {
-    bottom: 175px !important; /* Atur jarak dari bawah */
-    right: 85px !important; /* Sesuaikan jarak dari kanan */
-    }
+    bottom: 200px !important; /* Atur jarak dari bawah */
+    right: 75px !important; /* Sesuaikan jarak dari kanan */
+}
 
 .tile-overlay1, .tile-overlay2 {
     position: absolute; /* Posisi absolut untuk overlay */
@@ -24,7 +24,7 @@
 .tile-overlay1 {
     top: 100px; /* Sesuaikan jika perlu */
     right: 20px; /* Sesuaikan jika perlu */
-    }
+}
 
 /* Mengatur overlay 2 */
 .tile-overlay2 {
