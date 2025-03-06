@@ -73,48 +73,43 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+  window.createEditForm = (form, evt) => {
+      evt.preventDefault();
 
-        window.createEditForm = (form, evt) => {
-            evt.preventDefault();
+      console.log("Save Data");
+      var btnSubmit = $(form).find("button[type=submit]");
+      var id = document.getElementById("id").value
+      if (id != null && id != "") {
+        console.log("Edit Data");
+      } else {
+        console.log("Create Data");
+      }
 
-            console.log("Save Data");
-            var btnSubmit = $(form).find("button[type=submit]");
-            var id = document.getElementById("id").value;
-            var name = document.getElementById("name").value;
-            var value = document.getElementById("value").value;
+      $(form).parsley().validate();
+      if ($(form).parsley().isValid()) {
+        beforeLoadingButton(btnSubmit);
+        let formData = new FormData();
+        formData.append("id", document.getElementById("id").value);
+        formData.append("name", document.getElementById("name").value);
+        formData.append("value", document.getElementById("value").value);
 
-        
-                $(form).parsley().validate();
-                if ($(form).parsley().isValid()) {
-                    beforeLoadingButton(btnSubmit);
-                    let formData = new FormData();
-                    formData.append("id", id);
-                    formData.append("name", name);
-                    formData.append("value", document.getElementById("value").value);
-
-                    postData("/Admin/Footer", formData)
-                        .then((res) => {
-                            let result = res.data;
-                            if (result.code == 200) {
-                                showMessage("success", "Sukses!", result.message).then(() => {
-                                    window.location.href = "/Admin/Footer";
-                                });
-                            } else {
-                                showMessage("error", "Gagal!", result.message);
-                            }
-                            afterLoadingButton(btnSubmit);
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            afterLoadingButton(btnSubmit);
-                        });
-                }
-            })
-            .catch(error => {
-                console.error("Error checking product name:", error);
-                showMessage("error", "Error!", "Terjadi kesalahan saat memeriksa nama produk.");
-                afterLoadingButton(btnSubmit);
-            });
-        };
+        postData("/Admin/Footer", formData)
+          .then((res) => {
+            let result = res.data;
+            if (result.code == 200) {
+              showMessage("success", "Sukses!", result.message);
+              dataTablePetak.ajax.reload();
+            } else {
+              showMessage("error", "Gagal!", result.message);
+            }
+            afterLoadingButton(btnSubmit);
+          })
+          .catch((err) => {
+            console.log(err);
+            afterLoadingButton(btnSubmit);
+          });
+      }
+    };
+  
     </script>
 }

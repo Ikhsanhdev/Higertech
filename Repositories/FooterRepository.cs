@@ -49,7 +49,7 @@ public class FooterRepository : IFooterRepository
                 model.updated_at = DateTime.Now;
                 query = @"
                         UPDATE footer_contact
-                        SET name = @name, value = @value, updated_at = @updated_at)
+                        SET name = @name, value = @value, updated_at = @updated_at
                         WHERE id = @Id
                         RETURNING *;";
 
