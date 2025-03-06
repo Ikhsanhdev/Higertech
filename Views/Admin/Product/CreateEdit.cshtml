@@ -5,7 +5,6 @@
     ViewData["Title"] = "Dashboard - Analytics";
 }
 @section VendorStyles {
-    @* <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" /> *@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
     <style>
         .image-preview {
@@ -51,6 +50,23 @@
             line-height: 20px;
             cursor: pointer;
         }
+
+        /* Added styles for better UX */
+        .is-invalid {
+            border-color: #dc3545;
+        }
+        
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 80%;
+            color: #dc3545;
+        }
+        
+        .dropzone .dz-preview .dz-error-message {
+            top: 150px;
+        }
     </style>
 }
 @section VendorScripts {
@@ -71,9 +87,11 @@
                 <div class="card-body">
                     <input type="hidden" asp-for="id" class="form-control" id="id">
                     <input type="hidden" asp-for="gambar_url" class="form-control" id="gambar_url">
+                    <!-- Store removed images here -->
+                    <div id="removed-images-container"></div>
 
                     <div>
-                        <label for="productNama" class="form-label">Nama Produk</label>
+                        <label for="nama_produk" class="form-label">Nama Produk <span class="text-danger">*</span></label>
                         <input type="text" 
                             asp-for="nama_produk" 
                             class="form-control" 
@@ -84,45 +102,47 @@
                             data-parsley-required-message="Nama produk harus diisi"
                             data-parsley-trigger="change">
                         <div id="productNamaHelp" class="form-text">Tuliskan nama produk.</div>
+                        <div id="nama_produk-error" class="invalid-feedback"></div>
                     </div>
 
                     <div class="mt-3">
-                        <label for="productDeskripsi" class="form-label">Deskripsi Produk</label>
-                        <input type="text" asp-for="deskripsi" class="form-control" id="deskripsi" rows="3"
-                            placeholder="Masukkan deskripsi produk">
-                        <div id="productDeskripsiHelp" class="form-text">Tuliskan deskripsi untuk produk.</div>
-                    </div>
-
-                    <div class="mt-3">
-                        <label for="kategori" class="form-label">Kategori</label>
-                        <select asp-for="kategori" class="form-control" id="kategori">
+                        <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
+                        <select asp-for="kategori" class="form-control" id="kategori" required
+                            data-parsley-required="true"
+                            data-parsley-required-message="Kategori harus dipilih">
                             <option value="">-- Pilih Kategori --</option>
-                            <option value="hidrologi">hidrologi</option>
-                            <option value="klimatologi">klimatologi</option>
+                            <option value="hidrologi">Hidrologi</option>
+                            <option value="klimatologi">Klimatologi</option>
                         </select>
                         <div id="kategoriHelp" class="form-text">Pilih kategori untuk produk.</div>
                     </div>
+
+                    <div class="mt-3">
+                        <label for="deskripsi" class="form-label">Deskripsi Produk</label>
+                        <input type="text"  asp-for="deskripsi" class="form-control" id="deskripsi" rows="3"
+                            placeholder="Masukkan deskripsi produk">
+                        <div id="productDeskripsiHelp" class="form-text">Tuliskan deskripsi untuk produk.</div>
+                    </div>
                     
-                    <!-- New Fields -->
                     <div class="mt-3">
                         <label for="fitur" class="form-label">Fitur</label>
                         <textarea asp-for="fitur" class="form-control" id="fitur" rows="3"
                             placeholder="Masukkan fitur produk"></textarea>
-                        <div id="fiturHelp" class="form-text">Tuliskan fitur apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                        <div id="fiturHelp" class="form-text">Tuliskan fitur apa saja pada produk. *Note (berikan tanda (/) atau Enter untuk baris baru)</div>
                     </div>
                     
                     <div class="mt-3">
                         <label for="spesifikasi" class="form-label">Spesifikasi</label>
                         <textarea asp-for="spesifikasi" class="form-control" id="spesifikasi" rows="3"
                             placeholder="Masukkan spesifikasi produk"></textarea>
-                        <div id="spesifikasiHelp" class="form-text">Tuliskan spesifikasi apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                        <div id="spesifikasiHelp" class="form-text">Tuliskan spesifikasi apa saja pada produk. *Note (berikan tanda (/) atau Enter untuk baris baru)</div>
                     </div>
                     
                     <div class="mt-3">
                         <label for="aplikasi" class="form-label">Aplikasi</label>
                         <textarea asp-for="aplikasi" class="form-control" id="aplikasi" rows="3"
                             placeholder="Masukkan aplikasi produk"></textarea>
-                        <div id="aplikasiHelp" class="form-text">Tuliskan aplikasi apa saja pada produk. *Note (berikan tanda (/) untuk baris baru)</div>
+                        <div id="aplikasiHelp" class="form-text">Tuliskan aplikasi apa saja pada produk. *Note (berikan tanda (/) atau Enter untuk baris baru)</div>
                     </div>
                     
                     <div class="mt-3">
@@ -158,19 +178,20 @@
                     
                     <!-- Dropzone for Multiple Image Upload -->
                     <div class="mt-3">
-                        <label class="form-label">Upload Gambar Produk (Maks. 5). *Note(Upload foto khusus format (JPG))</label>
+                        <label class="form-label">Upload Gambar Produk (Maks. 10). *Note(Format gambar: JPG, PNG, JPEG. Ukuran maks: 5MB)</label>
                         <div id="dropzone-upload" class="dropzone">
                             <div class="dz-message needsclick">
                                 <i class="bx bx-cloud-upload"></i>
                                 <h5>Tarik foto ke sini atau klik untuk upload</h5>
-                                <span class="text-muted">Upload hingga 5 foto produk</span>
+                                <span class="text-muted">Upload hingga 10 foto produk</span>
                             </div>
                         </div>
                         <div id="upload-preview-container" class="mt-2"></div>
                     </div>
-                    <div class="mt-3 float-end">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <a href="/Admin/Product" class="btn btn-info ms-2">Back</a>
+                    
+                    <div class="mt-4 float-end">
+                        <button type="submit" id="btn-submit" class="btn btn-primary">Simpan</button>
+                        <a href="/Admin/Product" class="btn btn-secondary ms-2">Kembali</a>
                     </div>
                 </div>
             </div>
@@ -192,14 +213,59 @@
         // Track existing images to be removed
         let removedImages = [];
         
+        $(document).ready(function() {
+            // Initialize select2 for better dropdown UX
+            $("#kategori").select2({
+                placeholder: "-- Pilih Kategori --",
+                allowClear: true
+            });
+            
+            // Initialize validation
+            $('#form-product').parsley();
+        });
+        
+        // Helper functions for button loading state
+        function beforeLoadingButton(btn) {
+            $(btn).attr('disabled', true);
+            $(btn).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menyimpan...');
+        }
+        
+        function afterLoadingButton(btn) {
+            $(btn).attr('disabled', false);
+            $(btn).html('Simpan');
+        }
+        
+        // Helper function to show messages
+        function showMessage(type, title, text) {
+            return Swal.fire({
+                icon: type,
+                title: title,
+                text: text,
+                showConfirmButton: true
+            });
+        }
+        
+        // Helper function for POST requests
+        function postData(url, data) {
+            return axios.post(url, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        }
+        
         // Initialize Dropzone
         let myDropzone = new Dropzone("#dropzone-upload", {
             url: "/Admin/Product/UploadProductImage", // This will be handled via formData instead
             autoProcessQueue: false,
             addRemoveLinks: true,
             maxFiles: 10,
-            acceptedFiles: "image/*",
+            acceptedFiles: "image/jpeg,image/png,image/jpg",
             maxFilesize: 5, // MB
+            dictFileTooBig: "File terlalu besar ({{filesize}}MB). Maksimal ukuran file: {{maxFilesize}}MB.",
+            dictInvalidFileType: "Format file tidak valid. Hanya format JPG, JPEG, dan PNG yang diizinkan.",
+            dictRemoveFile: "Hapus gambar",
+            dictMaxFilesExceeded: "Tidak dapat mengunggah lebih dari {{maxFiles}} gambar.",
             init: function() {
                 this.on("addedfile", function(file) {
                     const existingCount = document.querySelectorAll('#existing-images .image-item').length;
@@ -228,25 +294,69 @@
             const imageItem = element.parentElement;
             const imageUrl = imageItem.getAttribute('data-url');
             
-            // Add to removed images list
-            removedImages.push(imageUrl);
-            
-            // Remove from display
-            imageItem.remove();
-            
-            // Update Dropzone max files
-            myDropzone.options.maxFiles = 10 - document.querySelectorAll('#existing-images .image-item').length + removedImages.length;
+            // Confirm before removal
+            Swal.fire({
+                title: "Hapus Gambar?",
+                text: "Apakah Anda yakin ingin menghapus gambar ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Add to removed images list
+                    removedImages.push(imageUrl);
+                    
+                    // Create hidden inputs for removed images
+                    const container = document.getElementById('removed-images-container');
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `removed_images[${removedImages.length - 1}]`;
+                    hiddenInput.value = imageUrl;
+                    container.appendChild(hiddenInput);
+                    
+                    // Remove from display
+                    imageItem.remove();
+                    
+                    // Update Dropzone max files
+                    myDropzone.options.maxFiles = 10 - document.querySelectorAll('#existing-images .image-item').length + removedImages.length;
+                    
+                    // Show success message
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "success",
+                        title: "Gambar dihapus dari daftar",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
         }
 
+        // Form submit handler
         window.createEditForm = (form, evt) => {
             evt.preventDefault();
 
-            console.log("Save Data");
             var btnSubmit = $(form).find("button[type=submit]");
             var id = document.getElementById("id").value;
             var productName = document.getElementById("nama_produk").value;
+            
+            // Reset validation state
+            $('#nama_produk').removeClass('is-invalid');
+            $('#nama_produk-error').text('');
+            
+            // Validate form with Parsley
+            $(form).parsley().validate();
+            if (!$(form).parsley().isValid()) {
+                return;
+            }
+            
+            // Show loading
+            beforeLoadingButton(btnSubmit);
 
-            // Periksa apakah nama produk sudah digunakan
+            // Check if product name exists
             axios.get(`/Admin/Product/CheckDuplicateName`, {
                 params: {
                     productName: productName,
@@ -255,59 +365,63 @@
             })
             .then(response => {
                 if (response.data.isDuplicate) {
-                    showMessage("error", "Validasi Gagal!", "Nama produk sudah digunakan. Silakan gunakan nama lain.");
+                    $('#nama_produk').addClass('is-invalid');
+                    $('#nama_produk-error').text('Nama produk sudah digunakan. Silakan gunakan nama lain.');
                     afterLoadingButton(btnSubmit);
                     return;
                 }
 
-                // Jika valid, lanjutkan dengan pengiriman data
-                $(form).parsley().validate();
-                if ($(form).parsley().isValid()) {
-                    beforeLoadingButton(btnSubmit);
-                    let formData = new FormData();
-                    formData.append("id", id);
-                    formData.append("nama_produk", productName);
-                    formData.append("deskripsi", document.getElementById("deskripsi").value);
-                    formData.append("kategori", document.getElementById("kategori").value);
-                    formData.append("fitur", document.getElementById("fitur").value);
-                    formData.append("spesifikasi", document.getElementById("spesifikasi").value);
-                    formData.append("aplikasi", document.getElementById("aplikasi").value);
-                    formData.append("tkdn", document.getElementById("tkdn").value);
-                    formData.append("bmp", document.getElementById("bmp").value);
+                // Prepare form data
+                let formData = new FormData();
+                formData.append("id", id);
+                formData.append("nama_produk", productName);
+                formData.append("deskripsi", document.getElementById("deskripsi").value);
+                formData.append("kategori", document.getElementById("kategori").value);
+                formData.append("fitur", document.getElementById("fitur").value);
+                formData.append("spesifikasi", document.getElementById("spesifikasi").value);
+                formData.append("aplikasi", document.getElementById("aplikasi").value);
+                formData.append("tkdn", document.getElementById("tkdn").value);
+                formData.append("bmp", document.getElementById("bmp").value);
+                formData.append("gambar_url", document.getElementById("gambar_url").value || '');
 
-                    // Add removed images to formData
-                    if (removedImages.length > 0) {
-                        removedImages.forEach((url, index) => {
-                            formData.append(`removed_images[${index}]`, url);
-                        });
-                    }
-
-                    // Add files from Dropzone
-                    if (uploadedFiles.length > 0) {
-                        uploadedFiles.forEach(file => {
-                            formData.append("files", file);
-                        });
-                    }
-
-                    console.log("FormData entries:", Array.from(formData.entries()).map(e => e[0]));
-
-                    postData("/Admin/Product", formData)
-                        .then((res) => {
-                            let result = res.data;
-                            if (result.code == 200) {
-                                showMessage("success", "Sukses!", result.message).then(() => {
-                                    window.location.href = "/Admin/Product";
-                                });
-                            } else {
-                                showMessage("error", "Gagal!", result.message);
-                            }
-                            afterLoadingButton(btnSubmit);
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            afterLoadingButton(btnSubmit);
-                        });
+                // Add removed images to formData
+                if (removedImages.length > 0) {
+                    removedImages.forEach((url, index) => {
+                        formData.append(`removed_images[${index}]`, url);
+                    });
                 }
+
+                // Add files from Dropzone
+                if (uploadedFiles.length > 0) {
+                    uploadedFiles.forEach(file => {
+                        formData.append("files", file);
+                    });
+                }
+
+                // Submit form data
+                postData("/Admin/Product", formData)
+                    .then((res) => {
+                        let result = res.data;
+                        if (result.code == 200) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Sukses!",
+                                text: result.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = "/Admin/Product";
+                            });
+                        } else {
+                            showMessage("error", "Gagal!", result.message);
+                        }
+                        afterLoadingButton(btnSubmit);
+                    })
+                    .catch((err) => {
+                        console.error("Error saving product:", err);
+                        showMessage("error", "Error!", "Terjadi kesalahan saat menyimpan data produk.");
+                        afterLoadingButton(btnSubmit);
+                    });
             })
             .catch(error => {
                 console.error("Error checking product name:", error);

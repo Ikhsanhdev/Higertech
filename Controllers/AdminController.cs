@@ -385,7 +385,24 @@ public class AdminController : Controller
     public IActionResult CreateEditProduct()
     {
         ProductVM model = new ProductVM();
+        // Inisialisasi koleksi kosong untuk mencegah error null reference
+        model.product_images = new List<ImageProductVM>();
+        model.removed_images = new List<string>();
         return View("~/Views/Admin/Product/CreateEdit.cshtml", model);
+    }
+
+    [HttpGet("Admin/Product/CheckDuplicateName")]
+    public async Task<IActionResult> CheckDuplicateName(string productName, Guid? id)
+    {
+        try
+        {
+            bool isDuplicate = await _unitOfWorkRepository.Product.IsProductNameExistsAsync(productName, id);
+            return Json(new { isDuplicate });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { error = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -396,8 +413,12 @@ public class AdminController : Controller
         
         try
         {
-            Console.WriteLine("Menerima request penyimpanan produk...");
+            Log.Information("Menerima request penyimpanan produk...");
             
+            // Ensure removed_images is initialized
+            if (model.removed_images == null)
+                model.removed_images = new List<string>();
+                
             // First save the product to get ID (for new products)
             response = await _unitOfWorkRepository.Product.SaveAsync(model);
             
@@ -405,43 +426,55 @@ public class AdminController : Controller
             {
                 Guid productId = model.id != Guid.Empty ? model.id : (Guid)response.Data;
                 
-                Console.WriteLine($"Produk berhasil disimpan dengan ID: {productId}");
+                Log.Information($"Produk berhasil disimpan dengan ID: {productId}");
                 
                 string firstImageUrl = null;
+                HashSet<string> processedFiles = new HashSet<string>();
 
-                // Pastikan file dikirim
+                // Process the files if any are sent
                 if (Request.Form.Files != null && Request.Form.Files.Count > 0)
                 {
                     foreach (var file in Request.Form.Files)
                     {
-                        Console.WriteLine($"Mengupload file: {file.FileName}");
+                        // Generate a unique filename using timestamp and GUID
+                        string fileName = $"{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                        Log.Information($"Mengupload file: {fileName}");
                         
                         // Upload each image
                         string imageUrl = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "products");
                         
                         if (string.IsNullOrEmpty(imageUrl))
                         {
-                            Console.WriteLine("Gagal mengunggah gambar!");
+                            Log.Error("Gagal mengunggah gambar!");
                         }
                         else
                         {
-                            Console.WriteLine($"Gambar diunggah ke: {imageUrl}");
-                            
-                            // Save the first image URL to update the main product later
-                            if (firstImageUrl == null)
+                            // Make sure we don't process the same file URL twice in one request
+                            if (!processedFiles.Contains(imageUrl))
                             {
-                                firstImageUrl = imageUrl;
-                            }
-                            
-                            // Save to image_products table
-                            bool isSaved = await _unitOfWorkRepository.Product.SaveProductImageAsync(productId, imageUrl);
-                            if (!isSaved)
-                            {
-                                Console.WriteLine($"Gagal menyimpan gambar {imageUrl} ke database!");
+                                processedFiles.Add(imageUrl);
+                                Log.Information($"Gambar diunggah ke: {imageUrl}");
+                                
+                                // Save the first image URL to update the main product later
+                                if (firstImageUrl == null)
+                                {
+                                    firstImageUrl = imageUrl;
+                                }
+                                
+                                // Save to image_products table
+                                bool isSaved = await _unitOfWorkRepository.Product.SaveProductImageAsync(productId, imageUrl);
+                                if (!isSaved)
+                                {
+                                    Log.Error($"Gagal menyimpan gambar {imageUrl} ke database!");
+                                }
+                                else
+                                {
+                                    Log.Information($"Gambar {imageUrl} berhasil disimpan ke database!");
+                                }
                             }
                             else
                             {
-                                Console.WriteLine($"Gambar {imageUrl} berhasil disimpan ke database!");
+                                Log.Information($"Gambar {imageUrl} sudah diproses, melewati untuk mencegah duplikasi");
                             }
                         }
                     }
@@ -456,23 +489,8 @@ public class AdminController : Controller
                     if (product != null && string.IsNullOrEmpty(product.gambar_url))
                     {
                         // Update the main product with the first image
-                        var productToUpdate = new Product
-                        {
-                            Id = productId,
-                            NamaProduk = product.nama_produk,
-                            GambarUrl = firstImageUrl,
-                            Kategori = product.kategori,
-                            Deskripsi = product.deskripsi,
-                            Fitur = product.fitur,
-                            Spesifikasi = product.spesifikasi,
-                            Aplikasi = product.aplikasi,
-                            Tkdn = product.tkdn,
-                            Bmp = product.bmp,
-                            UpdatedAt = DateTime.Now
-                        };
-                        
-                        await _unitOfWorkRepository.Product.UpdateProductAsync(productToUpdate);
-                        Console.WriteLine($"Gambar utama produk diperbarui dengan: {firstImageUrl}");
+                        await _unitOfWorkRepository.Product.UpdateMainProductImageAsync(productId, firstImageUrl);
+                        Log.Information($"Gambar utama produk diperbarui dengan: {firstImageUrl}");
                     }
                 }
             }
@@ -483,7 +501,7 @@ public class AdminController : Controller
         {
             response.Code = 500;
             response.Message = $"Terjadi kesalahan: {ex.Message}";
-            Console.WriteLine($"Error saat menyimpan produk: {ex.Message}");
+            Log.Error(ex, "Error saat menyimpan produk: {Message}", ex.Message);
             return Json(response);
         }
     }
@@ -498,6 +516,9 @@ public class AdminController : Controller
         {
             if (file != null)
             {
+                // Generate a unique filename using timestamp and GUID
+                string fileName = $"{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                
                 // Upload the image
                 string imageUrl = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "products");
                 
@@ -533,11 +554,28 @@ public class AdminController : Controller
     }
 
     [HttpGet("product/edit/{id}")]
-    public IActionResult EditProduct(Guid id)
+    public async Task<IActionResult> EditProduct(Guid id)
     {
-        ProductVM model = new ProductVM();
-
-        model = _unitOfWorkRepository.Product.GetProductByIdAsync(id).Result;
+        ProductVM model = await _unitOfWorkRepository.Product.GetProductByIdAsync(id);
+        
+        // Inisialisasi koleksi jika null
+        if (model != null)
+        {
+            if (model.product_images == null)
+                model.product_images = new List<ImageProductVM>();
+                
+            if (model.removed_images == null)
+                model.removed_images = new List<string>();
+        }
+        else
+        {
+            model = new ProductVM
+            {
+                id = id,
+                product_images = new List<ImageProductVM>(),
+                removed_images = new List<string>()
+            };
+        }
 
         return View("~/Views/Admin/Product/CreateEdit.cshtml", model);
     }
@@ -572,6 +610,37 @@ public class AdminController : Controller
         try
         {
             bool success = await _unitOfWorkRepository.Product.DeleteProductImageAsync(imageId);
+            
+            if (success)
+            {
+                response.Code = 200;
+                response.Message = "Image deleted successfully";
+            }
+            else
+            {
+                response.Code = 500;
+                response.Message = "Failed to delete image";
+            }
+            
+            return Json(response);
+        }
+        catch (Exception ex)
+        {
+            response.Code = 500;
+            response.Message = $"Error deleting image: {ex.Message}";
+            return Json(response);
+        }
+    }
+
+    [HttpDelete]
+    [Route("/Admin/Product/DeleteImageByUrl")]
+    public async Task<IActionResult> DeleteProductImageByUrl(Guid productId, string imageUrl)
+    {
+        AjaxResponse response = new();
+        
+        try
+        {
+            bool success = await _unitOfWorkRepository.Product.DeleteProductImageByUrlAsync(productId, imageUrl);
             
             if (success)
             {
@@ -714,203 +783,5 @@ public class AdminController : Controller
         return Json(response);
     }
     #endregion
-    #region  <=================================== Tutorial ========================================>
-    public IActionResult Tutorial()
-    {
-        return View("~/Views/Admin/Tutorial/Index.cshtml");
-    }
-
-    [HttpGet("tutorial/create")]
-    public IActionResult CreateEditTutorial()
-    {
-        TutorialVM model = new TutorialVM();
-
-        return View("~/Views/Admin/Tutorial/CreateEdit.cshtml", model);
-    }
-
-    [HttpGet("tutorial/edit/{id}")]
-    public IActionResult EditTutorial(Guid id)
-    {
-
-        var model = _unitOfWorkRepository.Tutorial.GetTutorialByIdAsync(id).Result;
-
-        if (model == null)
-        {
-            return View("~/Views/404/PageNotFound.cshtml");
-        }
-        return View("~/Views/Admin/Tutorial/CreateEdit.cshtml", model);
-    }
-
-    [HttpPost]
-    [Route("/Admin/Tutorial")]
-    public async Task<IActionResult> SaveTutorial(TutorialVM model, IFormFile file)
-    {
-        AjaxResponse response = new();
-        if (file != null)
-        {
-            model.img_url = await _unitOfWorkService.ImageUploads.UploadImageAsync(file, "tutorials");
-        }
-        response = await _unitOfWorkRepository.Tutorial.SaveAsync(model);
-        return Json(response);
-    }
-
-    [HttpDelete]
-    [Route("/tutorial/delete/{id}")]
-    public async Task<IActionResult> DeleteTutorial(Guid id)
-    {
-        AjaxResponse response = new();
-        var msg = await _unitOfWorkRepository.Tutorial.DeleteAsync(id);
-
-        if (msg)
-        {
-            response.Message = "Data berhasil dihapus";
-            response.Code = 200;
-        }
-        else
-        {
-            response.Message = "Data gagal dihapus";
-            response.Code = 500;
-        }
-
-        return Json(response);
-    }
-
-    public async Task<IActionResult> GetTutorialData()
-    {
-        var ModelRequest = new JqueryDataTableRequest
-        {
-            Draw = Request.Form["draw"].FirstOrDefault() ?? "",
-            Start = Request.Form["start"].FirstOrDefault() ?? "",
-            Length = Request.Form["length"].FirstOrDefault() ?? "25",
-            SortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault() ?? "",
-            SortColumnDirection = Request.Form["order[0]dir"].FirstOrDefault() ?? "",
-            SearchValue = Request.Form["search_value"].FirstOrDefault() ?? "",
-            Status = Request.Form["status"].FirstOrDefault() ?? ""
-
-        };
-
-        try
-        {
-            if (ModelRequest.Length == "-1")
-            {
-                ModelRequest.PageSize = int.MaxValue;
-            }
-            else
-            {
-                ModelRequest.PageSize = ModelRequest.PageSize != null ? Convert.ToInt32(ModelRequest.Length) : 0;
-            }
-
-            ModelRequest.Skip = ModelRequest.Start != null ? Convert.ToInt32(ModelRequest.Start) : 0;
-
-            var (rekomendasi, recordsTotal) = await _unitOfWorkRepository.Tutorial.GetDataTutorial(ModelRequest);
-            var jsonData = new { draw = ModelRequest.Draw, recordsFiltered = recordsTotal, recordsTotal, data = rekomendasi };
-            return Json(jsonData);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "General Exception: {@ExceptionDetails}", new { ex.Message, ex.StackTrace, DatatableRequest = ModelRequest });
-            throw;
-        }
-    } 
-    #endregion
-   
-     #region  <=================================== Footer ========================================>
-    public IActionResult Footer()
-    {
-        return View("~/Views/Admin/Footer/Index.cshtml");
-    }
-
-    [HttpGet("footer/create")]
-    public IActionResult CreateEditFooter()
-    {
-        FooterVM model = new FooterVM();
-
-        return View("~/Views/Admin/Footer/CreateEdit.cshtml", model);
-    }
-
-    [HttpGet("footer/edit/{id}")]
-    public IActionResult EditFooter(Guid id)
-    {
-
-        var model = _unitOfWorkRepository.Footer.GetFooterByIdAsync(id).Result;
-
-        if (model == null)
-        {
-            return View("~/Views/404/PageNotFound.cshtml");
-        }
-        return View("~/Views/Admin/Footer/CreateEdit.cshtml", model);
-    }
-
-    [HttpPost]
-    [Route("/Admin/Footer")]
-    public async Task<IActionResult> SaveFooter(FooterVM model)
-    {
-        AjaxResponse response = new();
-
-       
-        response = await _unitOfWorkRepository.Footer.SaveAsync(model);
-        return Json(response);
-    }
-
-    [HttpDelete]
-    [Route("/footer/delete/{id}")]
-    public async Task<IActionResult> DeleteFooter(Guid id)
-    {
-        AjaxResponse response = new();
-        var msg = await _unitOfWorkRepository.Footer.DeleteAsync(id);
-
-        if (msg)
-        {
-            response.Message = "Data berhasil dihapus";
-            response.Code = 200;
-        }
-        else
-        {
-            response.Message = "Data gagal dihapus";
-            response.Code = 500;
-        }
-
-        return Json(response);
-    }
-
-    public async Task<IActionResult> GetFooterData()
-    {
-        var ModelRequest = new JqueryDataTableRequest
-        {
-            Draw = Request.Form["draw"].FirstOrDefault() ?? "",
-            Start = Request.Form["start"].FirstOrDefault() ?? "",
-            Length = Request.Form["length"].FirstOrDefault() ?? "25",
-            SortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault() ?? "",
-            SortColumnDirection = Request.Form["order[0]dir"].FirstOrDefault() ?? "",
-            SearchValue = Request.Form["search_value"].FirstOrDefault() ?? "",
-            Status = Request.Form["status"].FirstOrDefault() ?? ""
-
-        };
-
-        try
-        {
-            if (ModelRequest.Length == "-1")
-            {
-                ModelRequest.PageSize = int.MaxValue;
-            }
-            else
-            {
-                ModelRequest.PageSize = ModelRequest.PageSize != null ? Convert.ToInt32(ModelRequest.Length) : 0;
-            }
-
-            ModelRequest.Skip = ModelRequest.Start != null ? Convert.ToInt32(ModelRequest.Start) : 0;
-
-            var (rekomendasi, recordsTotal) = await _unitOfWorkRepository.Footer.GetDataFooter(ModelRequest);
-            var jsonData = new { draw = ModelRequest.Draw, recordsFiltered = recordsTotal, recordsTotal, data = rekomendasi };
-            return Json(jsonData);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "General Exception: {@ExceptionDetails}", new { ex.Message, ex.StackTrace, DatatableRequest = ModelRequest });
-            throw;
-        }
-    } 
-    #endregion
-   
 }
 

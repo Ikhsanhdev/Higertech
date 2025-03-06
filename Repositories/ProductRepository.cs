@@ -20,6 +20,7 @@ public interface IProductRepository
     Task<bool> SaveProductImageAsync(Guid productId, string imageUrl);
     Task<bool> UpdateMainProductImageAsync(Guid productId, string imageUrl);
     Task<bool> DeleteProductImageAsync(int imageId);
+    Task<bool> DeleteProductImageByUrlAsync(Guid productId, string imageUrl);
 }
 
 public class ProductRepository : IProductRepository
@@ -146,7 +147,7 @@ public class ProductRepository : IProductRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching product: {ex.Message}");
+            Log.Error(ex, "Error fetching product: {Message}", ex.Message);
             return null;
         }
     }
@@ -214,13 +215,19 @@ public class ProductRepository : IProductRepository
             // Process removed images if any
             if (product.removed_images != null && product.removed_images.Count > 0)
             {
-                const string deleteImagesQuery = @"
-                    DELETE FROM image_products 
-                    WHERE id_product = @productId AND gambar_url = ANY(@removedImages);";
-                
-                await connection.ExecuteAsync(deleteImagesQuery, 
-                    new { productId, removedImages = product.removed_images.ToArray() }, 
-                    transaction);
+                foreach (var imageUrl in product.removed_images)
+                {
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        const string deleteImageQuery = @"
+                            DELETE FROM image_products 
+                            WHERE id_product = @productId AND gambar_url = @imageUrl;";
+                        
+                        await connection.ExecuteAsync(deleteImageQuery, 
+                            new { productId, imageUrl }, 
+                            transaction);
+                    }
+                }
             }
             
             // Commit the transaction
@@ -268,7 +275,7 @@ public class ProductRepository : IProductRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating product: {ex.Message}");
+            Log.Error(ex, "Error updating product: {Message}", ex.Message);
             return null;
         }
     }
@@ -298,7 +305,7 @@ public class ProductRepository : IProductRepository
         catch (Exception ex)
         {
             transaction.Rollback();
-            Console.WriteLine($"Error deleting product: {ex.Message}");
+            Log.Error(ex, "Error deleting product: {Message}", ex.Message);
             return false;
         }
     }
@@ -317,7 +324,7 @@ public class ProductRepository : IProductRepository
             var parameters = new DynamicParameters();
             parameters.Add("@productName", productName);
 
-            if (excludeId.HasValue)
+            if (excludeId.HasValue && excludeId.Value != Guid.Empty)
             {
                 query += " AND id != @excludeId";
                 parameters.Add("@excludeId", excludeId.Value);
@@ -357,54 +364,82 @@ public class ProductRepository : IProductRepository
         }
     }
     
-    // In SaveProductImageAsync method, after saving the image
     public async Task<bool> SaveProductImageAsync(Guid productId, string imageUrl)
     {
-        const string query = @"
-            INSERT INTO image_products
-            (id_product, gambar_url)
-            VALUES
-            (@productId, @imageUrl);";
+        // Check if image already exists to prevent duplicates
+        const string checkQuery = @"
+            SELECT COUNT(*) FROM image_products 
+            WHERE id_product = @productId AND gambar_url = @imageUrl";
             
         try
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            await connection.ExecuteAsync(query, new { 
-                productId, 
-                imageUrl, 
-                createdAt = DateTime.Now 
-            });
-
-            // Check if this is the first image for the product
-            const string checkQuery = @"
-                SELECT COUNT(*) FROM image_products 
-                WHERE id_product = @productId";
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction();
             
-            int imageCount = await connection.ExecuteScalarAsync<int>(checkQuery, new { productId });
-            
-            // If this is the first image, update the gambar_url in the products table
-            if (imageCount == 1)
+            try
             {
-                const string updateMainImageQuery = @"
-                    UPDATE products 
-                    SET gambar_url = @imageUrl
-                    WHERE id = @productId";
+                // Check if image already exists
+                int imageCount = await connection.ExecuteScalarAsync<int>(checkQuery, new { productId, imageUrl });
+                
+                // Only insert if image doesn't exist
+                if (imageCount == 0)
+                {
+                    const string insertQuery = @"
+                        INSERT INTO image_products
+                        (id_product, gambar_url)
+                        VALUES
+                        (@productId, @imageUrl);";
+                        
+                    await connection.ExecuteAsync(insertQuery, new { 
+                        productId, 
+                        imageUrl
+                    }, transaction);
                     
-                await connection.ExecuteAsync(updateMainImageQuery, new { productId, imageUrl });
+                    // Check if this is the first image for the product
+                    const string countQuery = @"
+                        SELECT COUNT(*) FROM image_products 
+                        WHERE id_product = @productId";
+                    
+                    int totalImages = await connection.ExecuteScalarAsync<int>(countQuery, new { productId }, transaction);
+                    
+                    // If this is the first image, update the gambar_url in the products table
+                    if (totalImages == 1)
+                    {
+                        const string updateMainImageQuery = @"
+                            UPDATE products 
+                            SET gambar_url = @imageUrl
+                            WHERE id = @productId";
+                            
+                        await connection.ExecuteAsync(updateMainImageQuery, new { productId, imageUrl }, transaction);
+                    }
+                    
+                    transaction.Commit();
+                    Log.Information("Gambar {ImageUrl} berhasil disimpan ke database untuk produk {ProductId}", imageUrl, productId);
+                    return true;
+                }
+                else
+                {
+                    // Image already exists, but we don't consider it an error
+                    transaction.Commit();
+                    Log.Information("Gambar {ImageUrl} sudah ada untuk produk {ProductId}", imageUrl, productId);
+                    return true;
+                }
             }
-
-            Console.WriteLine($"Gambar {imageUrl} berhasil disimpan ke database untuk produk {productId}");
-            return true;
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(ex, "Error menyimpan gambar ke database: {Message}", ex.Message);
+                return false;
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error menyimpan gambar ke database: {ex.Message}");
-            Log.Error(ex, "Error saving product image: {Message}", ex.Message);
+            Log.Error(ex, "Error connecting to database: {Message}", ex.Message);
             return false;
         }
     }
 
-    // Add this method to ProductRepository
     public async Task<bool> UpdateMainProductImageAsync(Guid productId, string imageUrl)
     {
         const string query = @"
@@ -440,6 +475,25 @@ public class ProductRepository : IProductRepository
         catch (Exception ex)
         {
             Log.Error(ex, "Error deleting product image: {Message}", ex.Message);
+            return false;
+        }
+    }
+    
+    public async Task<bool> DeleteProductImageByUrlAsync(Guid productId, string imageUrl)
+    {
+        const string query = @"
+            DELETE FROM image_products
+            WHERE id_product = @productId AND gambar_url = @imageUrl;";
+            
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.ExecuteAsync(query, new { productId, imageUrl });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error deleting product image by URL: {Message}", ex.Message);
             return false;
         }
     }
