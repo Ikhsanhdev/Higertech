@@ -90,31 +90,100 @@
 } */
 
 /* Category filter */
-.category-filter {
-    background: white;
-    padding: 15px 25px;
-    border-radius: 20px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 30px;
+.filter-search-container {
     display: flex;
-    justify-content: center;
-    max-width: 350px;
-    margin-left: auto;
-    margin-right: auto;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px auto 40px;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    padding: 0 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    padding: 15px 30px;
+}
+
+.category-filter {
+    display: flex;
+    align-items: center;
+    width: 30%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .category-filter label {
     font-size: 1rem;
     color: #2e4374;
+    margin-right: 10px;
+    white-space: nowrap;
 }
 
 .category-filter select {
-    width: 200px;
+    width: 100%;
     border-radius: 30px;
     padding: 8px 15px;
     border: 1px solid #e0e0e0;
     background-color: #f5f5f5;
     font-weight: 500;
+}
+
+.search-bar {
+    width: 25%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.search-bar .position-relative {
+    width: 100%;
+}
+
+.search-bar input {
+    width: 100%;
+    border-radius: 30px;
+    padding: 8px 15px;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Responsive layout */
+@media (max-width: 992px) {
+    .category-filter {
+        width: 45%; 
+    }
+
+    .search-bar {
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-search-container {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    .category-filter,
+    .search-bar {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .search-bar {
+        margin-bottom: 0;
+    }
 }
 
 .btn-main {
