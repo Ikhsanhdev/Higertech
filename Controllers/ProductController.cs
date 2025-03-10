@@ -23,6 +23,17 @@ public class ProductController : Controller
         try
         {
             var products = await _unitOfWorkRepository.Product.GetAllAsync();
+
+            // Extract unique categories from products
+            var categories = products
+                .Select(p => p.Kategori)
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Distinct()
+                .ToList();
+            
+            // Pass categories to view
+            ViewData["Categories"] = categories;
+            
             return View(products);
         }
         catch (Exception ex)

@@ -129,10 +129,10 @@
         <!-- Scroll Top -->
         <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-        <!-- WhatsApp Fixed Button -->
+        @* <!-- WhatsApp Fixed Button -->
         <a href="https://api.whatsapp.com/send/?phone=6281120022498&text=Tanya Produk Higertech (dari Web): &type=phone_number&app_absent=0" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
             <i class="bi bi-whatsapp"></i>
-        </a>
+        </a> *@
 
         <!-- Preloader -->
         <div id="preloader"></div>
@@ -166,7 +166,7 @@
                         socialContainer.innerHTML = ""; // Kosongkan elemen sebelum diisi ulang
 
                         Object.keys(data.social_links).forEach(key => {
-                            console.log("aa",key);
+                            console.log("aa", key);
                             let iconClass = `bi bi-${key}`;
                             let linkElement = document.createElement("a");
                             linkElement.href = data.social_links[key];
@@ -174,9 +174,51 @@
                             linkElement.rel = "noopener noreferrer";
                             linkElement.innerHTML = `<i class="${iconClass}"></i>`;
                             socialContainer.appendChild(linkElement);
+
+                            // Tambahkan WhatsApp fixed button jika key adalah whatsapp
+                            if (key === "whatsapp") {
+                                // Buat elemen WhatsApp floating button
+                                const whatsappButton = document.createElement("a");
+                                whatsappButton.href = data.social_links[key];
+                                whatsappButton.target = "_blank";
+                                whatsappButton.rel = "noopener noreferrer";
+                                whatsappButton.className = "whatsapp-float";
+                                whatsappButton.innerHTML = `<i class="bi bi-whatsapp"></i>`;
+                                
+                                // Tambahkan ke body
+                                document.body.appendChild(whatsappButton);
+                            }
                         });
                     })
                     .catch(error => console.error("Error fetching data:", error));
+                
+                // Tambahkan CSS untuk WhatsApp floating button
+                const styleElement = document.createElement("style");
+                styleElement.textContent = `
+                    .whatsapp-float {
+                        position: fixed;
+                        width: 50px;
+                        height: 50px;
+                        bottom: 80px;
+                        right: 20px;
+                        background-color: #25d366;
+                        color: #FFF;
+                        border-radius: 50px;
+                        text-align: center;
+                        font-size: 30px;
+                        box-shadow: 2px 2px 3px #999;
+                        z-index: 100;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-decoration: none;
+                    }
+                    
+                    .whatsapp-float:hover {
+                        background-color: #128C7E;
+                    }
+                `;
+                document.head.appendChild(styleElement);
             });
         </script>
         <!-- Main JS File -->
