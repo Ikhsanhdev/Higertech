@@ -45,12 +45,18 @@
         <div>Articles</div>
       </a>
     </li>
-    @* <li class='menu-item@(currentPage == "/Admin/Project" ? " active" : "")'>
+    <li class='menu-item@(currentPage == "/Admin/Project" ? " active" : "")'>
       <a href="/Admin/Project" class="menu-link">
         <i class="menu-icon tf-icons bx bx-briefcase-alt-2"></i>
         <div>Projects</div>
       </a>
-    </li> *@
+    </li>
+    <li class='menu-item@(currentPage == "/Admin/Tutorial" ? " active" : "")'>
+      <a href="/Admin/Tutorial" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-briefcase-alt-2"></i>
+        <div>Tutorials</div>
+      </a>
+    </li>
 
     <li class='menu-item@(currentPage == "/Admin/Product" ? " active" : "")'>
       <a href="/Admin/Product" class="menu-link">
@@ -65,8 +71,16 @@
       </a>
     </li>
     
-    
-    
+    <!-- Contact & Information -->
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text">Contact &amp; Information</span>
+    </li>
+    <li class='menu-item@(currentPage == "/Admin/Footer" ? " active" : "")'>
+      <a href="/Admin/Footer" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-notepad"></i>
+        <div>Footer Contact</div>
+      </a>
+    </li>
   </ul>
 
 </aside>

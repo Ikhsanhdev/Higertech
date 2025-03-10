@@ -1,0 +1,65 @@
+﻿@model List<Higertech.Models.Tutorial>;
+@using System.Globalization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Tutorial";
+    @* ViewData["HideFooter"] = true; *@
+}
+
+@section styles{
+    <link href="~/assets/css/tutorial.css" rel="stylesheet">
+}
+
+<section id="hero" class="hero section dark-background">
+    <div class="info d-flex align-items-center">
+        <div class="container">
+        </div>
+    </div>
+</section>
+<!-- Recent Blog Posts Section -->
+<section id="recent-blog-posts" class="recent-blog-posts section">
+    <!-- Section Title -->
+    <div class="container section-title pt-5" data-aos="fade-up">
+        <h2>Recent Tutorial Posts</h2>
+        <p>Watch the video and follow multiple tutorial videos</p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+        <div class="row gy-5">
+
+            @if (Model.Count > 0)
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-xl-4 col-md-6">
+                        <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">
+                            <div class="post-img position-relative overflow-hidden ">
+                                <img src="@Url.Content(item.Image)" class="img-fluid  w-100 project-image" alt="">
+                                @* <span class="post-date">@item.CreatedAt.ToString("MMMM dd", new CultureInfo("id-ID"))</span> *@
+                            </div>
+
+                            <div class="post-content d-flex flex-column">
+                                <a href="@item.Youtube" class="readmore stretched-link d-flex align-items-center gap-2" target="_blank">
+                                    <h3 class="post-title mb-0">@item.Title</h3>
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                                @* <hr> *@
+                                @* <a href="@item.Youtube" class="readmore stretched-link"><span>Go To Video</span><i
+                                        class="bi bi-arrow-right"></i></a> *@
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- End post item -->
+
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p>No article available.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section><!-- /Recent Blog Posts Section -->

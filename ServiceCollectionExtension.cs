@@ -25,6 +25,8 @@ namespace Higertech
       services.AddScoped<IProjectRepository, ProjectRepository>();
       services.AddScoped<IMainRepository, MainRepository>();
       services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
+      services.AddScoped<IFooterRepository, FooterRepository>();
+      services.AddScoped<ITutorialRepository, TutorialRepository>();
       #endregion
     }
   }

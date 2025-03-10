@@ -1,0 +1,476 @@
+/* secsion hero */
+.hero {
+    width: 100%;
+    min-height: 30vh;
+    background: url("../img/footer-bg.jpg") top center no-repeat;
+    background-size: cover;
+    position: relative;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Main product card styling */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 15px;
+    background-color: #f9f9f9;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+/* Product section styling */
+.Product.section {
+    padding: 60px 0;
+    background-color: #f8f9fa;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2e4374;
+    margin-bottom: 15px;
+}
+
+/* .section-title p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 40px;
+} */
+
+/* Category filter */
+.category-filter {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.category-filter label {
+    font-size: 1rem;
+    color: #2e4374;
+}
+
+.category-filter select {
+    width: 200px;
+    border-radius: 30px;
+    padding: 8px 15px;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+    font-weight: 500;
+}
+
+.btn-main {
+    background: linear-gradient(135deg, #2e4374, #4a69bb);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: auto;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.btn-main:hover {
+    background: linear-gradient(135deg, #4a69bb, #2e4374);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 105, 187, 0.3);
+}
+
+/* Modal styles */
+.modal-dialog {
+    max-width: 1650px;
+}
+
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background: white;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #2e4374, #4a69bb);
+    color: white;
+    border-bottom: none;
+    padding: 20px 30px;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+
+.btn-close {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    opacity: 1;
+    padding: 5px;
+    margin-right: 0;
+}
+
+.btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.modal-body {
+    padding: 0;
+}
+
+/* Product detail image */
+.product-detail-image-container {
+    height: 620px;  /* Reduced from 600px */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa, #e9eff5);
+    overflow: hidden;
+    position: relative;
+    padding: 30px;  /* Reduced padding */
+}
+
+.product-detail-image {
+    max-width: 80%;  /* Reduced from 100% */
+    max-height: 80%;  /* Reduced from 100% */
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.5s ease;
+}
+
+/* Thumbnails container */
+.product-thumbnails-container {
+    width: 100%;
+    padding: 15px 0;  /* Adjusted padding */
+    background: #f5f7fa;
+    border-top: 1px solid #e9eff5;
+}
+
+.thumbnails-wrapper {
+    display: flex;
+    gap: 15px;  /* Increased gap */
+    justify-content: center;
+    align-items: center;  /* Added for vertical alignment */
+    flex-wrap: nowrap;  /* Changed to nowrap for a single row */
+    padding: 10px;
+}
+
+.thumbnail-item {
+    width: 80px;  /* Reduced from 120px */
+    height: 80px;  /* Reduced from 120px */
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.thumbnail-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail-item.active {
+    border-color: #2e4374;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(46, 67, 116, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .product-thumbnails-container {
+        padding: 10px;
+    }
+    
+    .thumbnail-item {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.product-detail-image:hover {
+    transform: scale(1.05);
+}
+
+/* Product info section */
+.product-info-container {
+    padding: 30px;
+    height: 1150px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.product-section {
+    margin-bottom: 20px;
+}
+
+#modalProductTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.section-titles {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #131313;
+    margin-bottom: 8px;
+    text-align: center; 
+    font-family: 'Poppins', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.section-titlel {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    background-color: #252e70;
+    --background-color: linear-gradient(-90deg, #fffffff8, #252e70, #252e70);
+    background-image: var(--background-color);
+    margin-left: 40px;
+    font-family:'poppins', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.section-titlel::before {
+    content: "";
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    background: url("../img/Element-HGT-Biru-1.png") center center no-repeat;
+    background-size: cover;
+    margin-left: -50px;
+    border-radius: 0px;
+}
+
+.section-content {
+    font-size: 1rem;
+    text-align: justify;
+    color: #666;
+    line-height: 1.6;
+    padding-left: 18px;
+    font-family:'poppins', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+hr {
+    margin: 15px 0;
+    background-color: #e9ecef;
+    opacity: 0.5;
+}
+
+/* Scrollbar styling */
+.product-info-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.product-info-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.product-info-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #2e4374, #4a69bb);
+    border-radius: 10px;
+}
+
+/* TKDN and document section */
+.tkdn-section {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px; /* Memberi jarak antar gambar */
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+
+.tkdn-section .col-md-4 {
+    flex: 1 1 30%; /* Mengatur agar setiap gambar mengambil 30% dari lebar */
+    display: flex;
+    justify-content: center;
+}
+
+/* Menyesuaikan ukuran gambar */
+.tkdn-section img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+/* Efek hover pada gambar */
+.tkdn-section img:hover {
+    transform: scale(1.05);
+}
+
+/* Responsif untuk layar kecil (max-width: 768px) */
+@media (max-width: 768px) {
+    .tkdn-section {
+        flex-direction: row; /* Tetap horizontal */
+        justify-content: center;
+        gap: 5px; /* Mengurangi jarak agar muat 3 gambar */
+    }
+
+    .tkdn-section .col-md-4 {
+        flex: 1 1 calc(33.33% - 10px); /* Membuat 3 kolom sejajar */
+        max-width: 33.33%;
+    }
+
+    .tkdn-section img {
+        height: 60px; /* Menyesuaikan ukuran gambar agar tidak terlalu besar */
+    }
+}
+
+.catalog-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.catalog-section img {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.catalog-section img:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.img-fluid {
+    max-width: 20%;
+    height: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .product-detail-image-container,
+    .product-info-container {
+        height: auto;
+    }
+    
+    .modal-dialog {
+        margin: 10px;
+    }
+    
+    .modal-content {
+        border-radius: 15px;
+    }
+    
+    .category-filter {
+        padding: 10px 15px;
+    }
+}
+
+/* Animation for products */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.col-md-4 {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Feature box styling for modal detail */
+.feature-item {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    /* padding: 12px 15px;
+    margin-bottom: 10px; */
+    text-align: justify;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.feature-item::before {
+    content: "•";
+    color: #2e4374;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}

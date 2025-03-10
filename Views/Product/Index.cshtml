@@ -9,150 +9,23 @@
 <!-- Product Section -->
 @section styles{
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/carousel/carousel.css"/>
-    <style>
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-img-top {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            padding: 10px;
-        }
-
-        .card-body {
-            padding: 15px;
-            text-align: center;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Category filter */
-        .category-filter {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .category-filter select {
-            width: 200px;
-        }
-
-        /* Modal styles */
-        .modal-dialog {
-            max-width: 800px;
-        }
-
-        .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            background: linear-gradient(135deg, #f5f7fa, #e9eff5);
-        }
-
-        .modal-header {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .btn-close {
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            padding: 5px;
-        }
-
-        /* Product detail container */
-        .product-detail-image-container {
-            height: 700px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .product-detail-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        /* Product info section */
-        .product-info-container {
-            padding: 0 15px; /* Mengurangi padding samping */
-            height: 700px;
-            overflow-y: auto;
-        }
-
-        .product-section {
-            margin-bottom: 0.5rem; /* Kurangi margin antar section */
-        }
-
-        #modalProductTitle {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 0.25rem; /* Mengurangi margin bawah judul */
-        }
-
-        .section-titlel {
-            font-size: 1rem;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 0.25rem; /* Mengurangi jarak antara label dan konten */
-        }
-
-        .section-content {
-            font-size: 0.95rem;
-            color: #444;
-            margin-bottom: 0.25rem; /* Mengurangi jarak antar konten */
-        }
-
-        /* Scrollbar styling */
-        .product-info-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .product-info-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .product-info-container::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link href="~/assets/css/product.css" rel="stylesheet">
 }
 
-<br>
-<br>
-<br>
+<section id="hero" class="hero section dark-background">
+    <div class="info d-flex align-items-center">
+        <div class="container">
+        </div>
+    </div>
+</section>
 
 <section id="Product" class="Product section">
     <div class="container section-title text-center" data-aos="fade-up">
         <h2>Product</h2>
         <p>Our various superior products</p>
     </div>
-
-    <div class="container category-filter d-flex align-items-center">
+     <div class="container category-filter d-flex align-items-center">
         <label for="categoryFilter" class="me-2 fw-bold">Category :</label>
         <select id="categoryFilter" class="form-select">
             <option value="semua">All Product</option>
@@ -160,7 +33,6 @@
             <option value="klimatologi">Klimatologi</option>
         </select>
     </div>
-
     <div class="container">
         <div class="row gy-4" id="productContainer">
             @if (Model != null && Model.Any())
@@ -168,23 +40,24 @@
                 @foreach (var product in Model)
                 {
                     var imageUrl = product.GambarUrl?.TrimStart('/');
-                    <div class="col-md-4" data-aos="fade-up" data-category="@(product.Kategori?.ToLower() ?? "")">
-                        <div class="card border-0 shadow">
-                            <!-- Tambahkan onclick di elemen <a> -->
-                            <a href="javascript:void(0);" 
-                            onclick="showProductDetail('@product.Id')">
+                    <div class="col-md-4 mb-4" data-aos="fade-up" data-category="@(product.Kategori?.ToLower() ?? "")">
+                        <div class="card border-0 shadow h-100" onclick="showProductDetail('@product.Id')">
+                            <a href="javascript:void(0);">
                                 <img src="@Url.Content("~/" + imageUrl)" 
                                     alt="@product.NamaProduk" 
                                     class="card-img-top"
                                     onerror="this.onerror=null; this.src='@Url.Content("~/assets/placeholder.png")';">
                             </a>
-                            <div class="card-body text-center">
-                                <h5 class="card-title">@product.NamaProduk</h5>
-                                <p class="text-muted mb-2">@product.Kategori</p>
-                                <button class="btn btn-main w-100" 
-                                        onclick="showProductDetail('@product.Id')">
-                                    Detail
-                                </button>
+                            <div class="card-body d-flex flex-column">
+                                <div>
+                                    <h5 class="card-title">@product.NamaProduk</h5>
+                                    <p class="text-muted mb-3">@product.Kategori</p>
+                                </div>
+                                <div class="mt-auto">
+                                    <button class="btn btn-main w-100" onclick="showProductDetail('@product.Id')">
+                                        Detail
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -201,66 +74,86 @@
 
     <!-- Modal -->
     <div class="modal fade" id="productModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Detail Product</h5>
+                    <h5 class="modal-title" style="color: white;">DETAIL PRODUCT</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Product Image with Carousel -->
+                        <div class="col-md-5">
                             <div class="product-detail-image-container">
                                 <img id="modalProductImage" src="" class="product-detail-image" alt="Product Image">
                             </div>
+                            <!-- Image Thumbnails Carousel -->
+                            <div class="product-thumbnails-container">
+                                <div class="thumbnails-wrapper" id="productThumbnails">
+                                    <!-- Thumbnails will be loaded dynamically -->
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
+                        
+                        <!-- Product Info -->
+                        <div class="col-md-7">
                             <div class="product-info-container">
                                 <!-- Product Title -->
                                 <div class="product-section">
-                                    <h4 id="modalProductTitle" class="section-titlel">Product Name</h4>
+                                    <h4 id="modalProductTitle" class="section-titles" style="color: #3b3b3b;"></h4>
                                     <hr>
                                 </div>
 
-                                <!-- Category Section -->
+                                <!-- Function Section -->
                                 <div class="product-section">
-                                    <h5 class="section-titlel">Category</h5>
-                                    <p id="modalProductCategory" class="section-content">Category Name</p>
+                                    <h5 class="section-titlel">DESKRIPSI ALAT</h5>
+                                    <p id="modalProductFunction" class="section-content"></p>
                                     <hr>
                                 </div>
 
-                                <!-- Description Section -->
+                                <!-- Features Section -->
                                 <div class="product-section">
-                                    <h5 class="section-titlel">Description</h5>
-                                    <p id="modalProductDescription" class="section-content">Product Description goes here.</p>
+                                    <h5 class="section-titlel">FITUR</h5>
+                                    <div id="productFeatures">
+                                        <!-- Features will be loaded dynamically -->
+                                    </div>
                                     <hr>
                                 </div>
 
-                                <div>
-                                    <h5 class="section-titlel">Link Tkdn</h5>
-                                    <p>40% <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech">TKDN KEMENPERIN</a></p>
+                                <!-- Specifications Section -->
+                                <div class="product-section">
+                                    <h5 class="section-titlel">SPESIFIKASI</h5>
+                                    <div id="productSpecs">
+                                        <!-- Specs will be loaded dynamically -->
+                                    </div>
+                                    <hr>
+                                </div>
+
+                                <!-- Application Section -->
+                                <div class="product-section">
+                                    <h5 class="section-titlel">APLIKASI</h5>
+                                    <div id="productApplication">
+                                        <!-- Applications will be loaded dynamically -->
+                                    </div>
+                                    <hr>
+                                </div>
+
+                                <!-- TKDN Section -->
+                                <div class="product-section" id="tkdnSection">
+                                    <h5 class="section-titlel">TKDN</h5>
+                                    <div id="tkdnContent">
+                                        <!-- TKDN content will be loaded dynamically -->
+                                    </div>
                                     <hr>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col">
-                                        <img src="assets/img/tkdnn.png" width="120" height="90" alt="">
-                                    </div>
-                                    <div class="col">
-                                        <img src="assets/img/pdf.png" width="120" height="90" alt="">
-                                    </div>
-                                    
-                                </div>
-
-                                                                
-                                <div class="row">
-                                    <div class="col"><br>
-                                    @* to new page *@
-                                    
-                                        <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank"  ><img src="assets/img/catalog2025.jpg" width="120" height="190" alt=""></a>
-                                    </div>
-
-                                    
+                                <!-- Catalog Section -->
+                                <div class="product-section catalog-section">
+                                    <h5 class="section-titlel">CATALOG</h5>
+                                    <p class="btn btn-sm btn-outline-primary"><a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">Download Catalog</a></p><br>
+                                    <a href="~/assets/document/Katalog_Higertech_2025.pdf" target="_blank">
+                                        <img src="/assets/img/catalog2025.jpg" class="img-fluid" alt="Catalog 2025">
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -273,8 +166,121 @@
 
 @section Scripts{
     <script src="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        // Function untuk menampilkan detail produk
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize filter on load
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter.value !== 'semua') {
+                filterProducts(categoryFilter.value);
+            }
+            
+            // Fix for modal close bug
+            document.querySelector('.modal .btn-close').addEventListener('click', function() {
+                // Ensure both modal and backdrop are properly removed
+                const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                modal.hide();
+                
+                // Force removal of backdrop if it persists
+                setTimeout(() => {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => {
+                        backdrop.remove();
+                    });
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }, 300);
+            });
+            
+            // Also handle modal hidden event for additional cleanup
+            document.getElementById('productModal').addEventListener('hidden.bs.modal', function () {
+                // This runs after the modal is hidden
+                // Force cleanup of any remaining modal elements
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            });
+        });
+
+        // Function to process text content with bullet points and handle '/' as line breaks
+        function processTextWithBullets(text) {
+            if (!text) return '';
+            
+            // Check if the text already contains HTML bullet points
+            if (text.includes('<li>') || text.includes('<ul>')) {
+                return text;
+            }
+            
+            // Replace '/' with newlines first, then split by newlines or bullet characters
+            text = text.replace(/\//g, '\n');
+            const lines = text.split(/\r?\n|•/).filter(line => line.trim() !== '');
+            
+            // Return items as feature divs
+            return lines.map(line => {
+                line = line.trim();
+                if (line.startsWith('-')) line = line.substring(1).trim();
+                if (line) {
+                    return `<div class="feature-item">${line}</div>`;
+                }
+                return '';
+            }).join('');
+        }
+
+        // Function to handle product thumbnails
+        function renderProductThumbnails(images, mainImageUrl) {
+            const thumbnailsContainer = document.getElementById('productThumbnails');
+            thumbnailsContainer.innerHTML = '';
+            
+            if (!images || images.length === 0) {
+                // If no images, add default placeholder
+                const defaultImageUrl = mainImageUrl || '/assets/placeholder.png';
+                thumbnailsContainer.innerHTML = `
+                    <div class="thumbnail-item active" data-image="${defaultImageUrl}">
+                        <img src="${defaultImageUrl}" alt="Product Image">
+                    </div>`;
+                return;
+            }
+            
+            // Add all available images
+            images.forEach((image, index) => {
+                const imageUrl = image.gambar_url?.startsWith('/') ? 
+                    image.gambar_url : '/' + image.gambar_url;
+                
+                const thumbnailDiv = document.createElement('div');
+                thumbnailDiv.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                thumbnailDiv.dataset.image = imageUrl;
+                thumbnailDiv.innerHTML = `<img src="${imageUrl}" alt="Product Thumbnail ${index + 1}">`;
+                thumbnailsContainer.appendChild(thumbnailDiv);
+            });
+        }
+
+        // Function to render TKDN content conditionally
+        function renderTkdnContent(tkdnValue) {
+            const tkdnContainer = document.getElementById('tkdnContent');
+            
+            if (!tkdnValue || tkdnValue === '-') {
+                tkdnContainer.innerHTML = '<p>-</p>';
+                return;
+            }
+            
+            tkdnContainer.innerHTML = `
+                <p>Sertifikat Tingkat Komponen Dalam Negeri (TKDN) ${tkdnValue} <a href="https://tkdn.kemenperin.go.id/search.php?where=perush&what=higertech" class="btn btn-sm btn-outline-primary" target="_blank">TKDN KEMENPERIN</a></p>
+                <div class="row mt-3 tkdn-section">
+                    <div class="col-md-4">
+                        <img src="/assets/img/tkdn40.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/assets/img/produkindo100.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                    <div class="col-md-4">
+                        <img src="/assets/img/kan.png" class="img-tkdn" alt="TKDN Certificate" style="height: 80px;">
+                    </div>
+                </div>`;
+        }
+
+        // Main function to display product details
         async function showProductDetail(productId) {
             try {
                 const response = await fetch(`/Product/GetProductById/${productId}`);
@@ -284,14 +290,47 @@
                 const product = await response.json();
                 
                 if (product) {
-                    document.getElementById('modalProductTitle').textContent = product.nama_produk;
-                    const imageUrl = product.gambar_url?.startsWith('/') ? 
-                        product.gambar_url : 
-                        '/' + product.gambar_url;
-                    document.getElementById('modalProductImage').src = imageUrl;
-                    document.getElementById('modalProductCategory').textContent = product.kategori;
-                    document.getElementById('modalProductDescription').textContent = product.deskripsi;
+                    // Set title
+                    document.getElementById('modalProductTitle').textContent = product.nama_produk || '';
                     
+                    // Set main image (use first image from product_images or fallback to product.gambar_url)
+                    let mainImageUrl;
+                    if (product.product_images && product.product_images.length > 0) {
+                        mainImageUrl = product.product_images[0].gambar_url;
+                    } else {
+                        mainImageUrl = product.gambar_url;
+                    }
+                    
+                    if (mainImageUrl) {
+                        mainImageUrl = mainImageUrl.startsWith('/') ? mainImageUrl : '/' + mainImageUrl;
+                    } else {
+                        mainImageUrl = '/assets/placeholder.png';
+                    }
+                    
+                    document.getElementById('modalProductImage').src = mainImageUrl;
+                    
+                    // Render thumbnails
+                    renderProductThumbnails(product.product_images, mainImageUrl);
+                    
+                    // Set description
+                    document.getElementById('modalProductFunction').innerHTML = product.deskripsi || 'No description available';
+                    
+                    // Set features
+                    document.getElementById('productFeatures').innerHTML = 
+                        product.fitur ? processTextWithBullets(product.fitur) : 'No features available';
+                    
+                    // Set specifications
+                    document.getElementById('productSpecs').innerHTML = 
+                        product.spesifikasi ? processTextWithBullets(product.spesifikasi) : 'No specifications available';
+                    
+                    // Set applications
+                    document.getElementById('productApplication').innerHTML = 
+                        product.aplikasi ? processTextWithBullets(product.aplikasi) : 'No application information available';
+                    
+                    // Set TKDN 
+                    renderTkdnContent(product.tkdn);
+                    
+                    // Show modal
                     const modal = new bootstrap.Modal(document.getElementById('productModal'));
                     modal.show();
                 }
@@ -301,18 +340,43 @@
             }
         }
 
-        document.getElementById('categoryFilter').addEventListener('change', function() {
-            const selectedCategory = this.value.toLowerCase();
-            const products = document.querySelectorAll('[data-category]');
+        // Handle thumbnail clicks
+        document.addEventListener('click', function(e) {
+            // Check if a thumbnail was clicked
+            if (e.target.closest('.thumbnail-item')) {
+                const thumbnailItem = e.target.closest('.thumbnail-item');
+                const imageUrl = thumbnailItem.dataset.image;
+                
+                // Update main image
+                const mainImage = document.getElementById('modalProductImage');
+                if (mainImage) {
+                    mainImage.src = imageUrl;
+                    
+                    // Update active state
+                    document.querySelectorAll('.thumbnail-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    thumbnailItem.classList.add('active');
+                }
+            }
+        });
 
+        // Filter products by category
+        function filterProducts(category) {
+            const products = document.querySelectorAll('[data-category]');
             products.forEach(product => {
                 const productCategory = product.dataset.category;
-                if (selectedCategory === 'semua' || productCategory === selectedCategory) {
+                if (category === 'semua' || productCategory === category) {
                     product.closest('.col-md-4').style.display = 'block';
                 } else {
                     product.closest('.col-md-4').style.display = 'none';
                 }
             });
+        }
+
+        // Category filter event listener
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            filterProducts(this.value.toLowerCase());
         });
     </script>
 }

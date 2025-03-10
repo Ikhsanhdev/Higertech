@@ -50,10 +50,6 @@ public class MainController : Controller
         return View();
     }
 
-    public IActionResult Template() {
-        return View();
-    }
-
     public IActionResult MapGoogle()
     {
         return View();
@@ -282,5 +278,17 @@ public class MainController : Controller
             Console.WriteLine(ex.Message);
             return Json(new { Total = 0 });
         }
+    }
+
+     [HttpGet]
+     [Route("/get-footer")]
+    public async Task<IActionResult> GetFooterContact()
+    {
+        var data = await _unitOfWorkRepository.Main.GetFooterAsync();
+        if (data == null)
+        {
+            return NotFound(new { message = "Data not found" });
+        }
+        return Ok(data);
     }
 }
