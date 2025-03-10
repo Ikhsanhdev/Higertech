@@ -182,7 +182,7 @@ public class TutorialRepository : ITutorialRepository
 
                 whereConditions.Add(@"
                     (LOWER(title) LIKE @SearchValue OR
-                    LOWER(decription) LIKE @SearchValue)");
+                    LOWER(description) LIKE @SearchValue)");
                 parameters.Add("@SearchValue", "%" + request.SearchValue.ToLower() + "%");
             }
 
