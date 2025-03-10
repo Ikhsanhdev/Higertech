@@ -75,6 +75,7 @@
             <tr>
               <th>Judul</th>
               <th>Deksripsi</th>
+              <th>Kategori</th>
               <th>Youtube</th>
               <th>Terakhir Update</th>
               <th>Actions</th>
@@ -182,7 +183,7 @@
               params.search_value = getValueById('search-data');
               @* params.status = getValueById('status-data'); *@
                 @* params.filter_date = getValueById('monthpicker'); *@
-                                          }
+                                            }
           },
           columns: [
             {
@@ -193,7 +194,7 @@
                 return words + (data.split(" ").length > 4 ? "..." : "");
               }
             },
-             {
+            {
               data: 'description',
               render: function (data, type, row) {
                 if (!data) return "";
@@ -206,15 +207,28 @@
               }
             },
             {
+              data: 'category',
+              render: function (data, type, row) {
+                if (!data) return "";
+                let words = data.split(" ").slice(0, 4).join(" ");
+                return words + (data.split(" ").length > 4 ? "..." : "");
+              }
+            },
+            {
               data: 'yt_url',
               render: function (data, type, row) {
                 if (!data) return "";
 
                 let div = $("<div>").html(data);
-                let plainText = div.text();
+                let plainText = div.text().trim(); // Trim untuk menghapus spasi di awal/akhir
 
-                let words = plainText.split(" ").slice(0, 4).join(" ");
-                return words + (plainText.split(" ").length > 4 ? "..." : "");
+                if (plainText.length > 40) {
+                  $('#result').text(plainText.substring(0, 40) + '.....');
+                  return plainText.substring(0, 40) + '.....';
+                }
+
+                $('#result').text(plainText);
+                return plainText;
               }
             },
             {
@@ -238,7 +252,7 @@
               orderable: false,
               render: function (data, type, row) {
                 return `<button onclick="editData(this,event);" data-id="${row.id}" type="button" class="btn btn-sm btn-success btn-icon fa-solid fa-pen"></button>  
-                                                      <button onclick="delData(this, event);" data-id="${row.id}" type="button" class="btn btn-sm btn-danger btn-icon fa-solid fa-trash"></button>`;
+                                                        <button onclick="delData(this, event);" data-id="${row.id}" type="button" class="btn btn-sm btn-danger btn-icon fa-solid fa-trash"></button>`;
               },
             },
           ],

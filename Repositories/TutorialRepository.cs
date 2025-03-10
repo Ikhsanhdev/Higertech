@@ -38,8 +38,8 @@ public class TutorialRepository : ITutorialRepository
             {
                 query = @"
                     INSERT INTO 
-                    tutorials ( title, description, img_url, yt_url)
-                    VALUES (@title, @description, @img_url, @yt_url)
+                    tutorials ( title, description, img_url, yt_url,category)
+                    VALUES (@title, @description, @img_url, @yt_url,UPPER(@category))
                     RETURNING *;";
             }
             else
@@ -52,6 +52,7 @@ public class TutorialRepository : ITutorialRepository
                             description = @description,
                             img_url = @img_url,
                             yt_url = @yt_url,
+                            category = UPPER(@category),
                             updated_at = @updated_at
                         WHERE id = @Id
                         RETURNING *;";
@@ -133,6 +134,7 @@ public class TutorialRepository : ITutorialRepository
                             id AS ""Id"",
                             name AS ""Name"",
                             value AS ""Value"",
+                            category AS ""Category"",
                             created_at AS ""CreatedAt"",
                             updated_at AS ""UpdatedAt"";
                         FROM tutorials
@@ -233,6 +235,7 @@ public class TutorialRepository : ITutorialRepository
                 id AS ""Id"",
                 title AS ""Title"",
                 description AS ""Description"",
+                category AS ""Category"",
                 yt_url AS ""Youtube"",
                 img_url AS ""Image""
             FROM tutorials
@@ -262,6 +265,7 @@ public class TutorialRepository : ITutorialRepository
                 title AS ""Title"",
                 description AS ""Description"",
                 yt_url AS ""Youtube"",
+                category AS ""Category"",
                 img_url AS ""Image"",
                 created_at AS ""CreatedAt""
             FROM tutorials
