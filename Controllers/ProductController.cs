@@ -5,6 +5,7 @@ using Higertech.ViewModels;
 using Higertech.Interfaces;
 using Higertech.Models.Datatables;
 using Serilog;
+using Higertech.Repositories;
 
 namespace Higertech.Controllers;
 
@@ -12,10 +13,12 @@ public class ProductController : Controller
 {
     private readonly ILogger<ProductController> _logger;
     private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+    private readonly IFooterRepository _footerRepository;
 
-    public ProductController(IUnitOfWorkRepository unitOfWorkRepository)
+    public ProductController(IUnitOfWorkRepository unitOfWorkRepository, IFooterRepository footerRepository)
     {
         this._unitOfWorkRepository = unitOfWorkRepository;
+        this._footerRepository = footerRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -23,7 +26,7 @@ public class ProductController : Controller
         try
         {
             var products = await _unitOfWorkRepository.Product.GetAllAsync();
-
+            var footer = await _footerRepository.GetListFooterAsync();
             // Extract unique categories from products
             var categories = products
                 .Select(p => p.Kategori)
@@ -33,7 +36,8 @@ public class ProductController : Controller
             
             // Pass categories to view
             ViewData["Categories"] = categories;
-            
+            ViewData["Footer"] = footer.OrderByDescending(m => m.CreatedAt).ToList();
+
             return View(products);
         }
         catch (Exception ex)

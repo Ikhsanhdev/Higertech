@@ -190,7 +190,7 @@
     background: linear-gradient(135deg, #2e4374, #4a69bb);
     border: none;
     color: white;
-    padding: 10px 20px;
+    padding: 8px 15px;
     border-radius: 30px;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -203,6 +203,19 @@
     background: linear-gradient(135deg, #4a69bb, #2e4374);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(74, 105, 187, 0.3);
+}
+
+.btn-cart {
+    background: linear-gradient(135deg, #30ec8e, #4abb9f);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: auto;
+    max-width: 200px;
+    margin: 0 auto;
 }
 
 /* Modal styles */

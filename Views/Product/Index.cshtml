@@ -68,8 +68,11 @@
                                     <p class="text-muted mb-3">@product.Kategori</p>
                                 </div>
                                 <div class="mt-auto">
-                                    <button class="btn btn-main w-100" onclick="showProductDetail('@product.Id')">
+                                    <button class="btn btn-main w-100 ms-5" onclick="showProductDetail('@product.Id')">
                                         Detail
+                                    </button>
+                                    <button class="btn btn-cart w-20 ms-2" onclick="event.stopPropagation(); contactWhatsApp('@product.Id', '@product.NamaProduk')">
+                                        <i class="bi bi-cart-dash"></i>
                                     </button>
                                 </div>
                             </div>
@@ -221,47 +224,76 @@
         // Search functionality
         document.getElementById('search-data').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase().trim();
-            const products = document.querySelectorAll('#productContainer > div');
+            const products = document.querySelectorAll('#productContainer > div:not(.no-results-message)');
+            let visibleCount = 0;
             
             products.forEach(product => {
                 const productElement = product.querySelector('.card');
-                const productTitle = productElement.querySelector('.card-title').textContent.toLowerCase();
-                const productCategory = productElement.querySelector('.text-muted').textContent.toLowerCase();
                 
-                // Check if product title or category contains the search term
-                if (productTitle.includes(searchTerm) || productCategory.includes(searchTerm)) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
+                // Pastikan elemen produk valid sebelum mencoba mengakses propertinya
+                if (productElement) {
+                    const productTitle = productElement.querySelector('.card-title').textContent.toLowerCase();
+                    const productCategory = productElement.querySelector('.text-muted').textContent.toLowerCase();
+                    
+                    // Check if product title or category contains the search term
+                    if (productTitle.includes(searchTerm) || productCategory.includes(searchTerm)) {
+                        product.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        product.style.display = 'none';
+                    }
                 }
             });
             
-            // Show "no products found" message if all products are hidden
-            const visibleProducts = document.querySelectorAll('#productContainer > div[style="display: block"]');
-            const noProductsMessage = document.querySelector('#productContainer .col-12.text-center');
+            // Tangani pesan "no products found"
+            let noResultsMessage = document.querySelector('.no-results-message');
             
-            if (visibleProducts.length === 0 && searchTerm !== '') {
-                // Create message if it doesn't exist
-                if (!noProductsMessage) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'col-12 text-center no-results-message';
-                    messageDiv.innerHTML = '<p>No products found matching your search.</p>';
-                    document.getElementById('productContainer').appendChild(messageDiv);
+            // Jika tidak ada produk yang terlihat DAN ada kata kunci pencarian
+            if (visibleCount === 0 && searchTerm !== '') {
+                // Buat pesan jika belum ada
+                if (!noResultsMessage) {
+                    noResultsMessage = document.createElement('div');
+                    noResultsMessage.className = 'col-12 text-center no-results-message';
+                    noResultsMessage.innerHTML = '<p>No products found matching your search.</p>';
+                    document.getElementById('productContainer').appendChild(noResultsMessage);
                 } else {
-                    noProductsMessage.style.display = 'block';
-                    noProductsMessage.querySelector('p').textContent = 'No products found matching your search.';
+                    noResultsMessage.style.display = 'block';
                 }
             } else {
-                // Remove or hide message if products are visible or search is empty
-                const noResultsMessage = document.querySelector('.no-results-message');
+                // Sembunyikan pesan jika ada produk yang terlihat ATAU pencarian kosong
                 if (noResultsMessage) {
-                    noResultsMessage.remove();
-                }
-                if (noProductsMessage) {
-                    noProductsMessage.style.display = searchTerm === '' && products.length === 0 ? 'block' : 'none';
+                    noResultsMessage.style.display = 'none';
                 }
             }
         });
+
+        // Function to contact via WhatsApp
+        function contactWhatsApp(productId, productName) {
+            const footerData = @Html.Raw(Json.Serialize(ViewData["Footer"]));
+            
+            let whatsappLink = null;
+            if (footerData && footerData.length > 0) {
+                const whatsappEntry = footerData.find(item => 
+                    item.name && item.name.toLowerCase() === "whatsapp");
+                
+                if (whatsappEntry) {
+                    whatsappLink = whatsappEntry.value;
+                }
+            }
+            
+            if (!whatsappLink) {
+                console.error("WhatsApp information not found in footer data");
+                alert("WhatsApp contact not available. Please contact us through other means.");
+                return;
+            }
+            
+            const message = `Halo, saya tertarik dengan produk: ${productName}`;
+            const hasParams = whatsappLink.includes('?');
+            const separator = hasParams ? '&' : '?';
+            const fullWhatsappLink = `${whatsappLink}${separator}text=${encodeURIComponent(message)}`;
+            
+            window.open(fullWhatsappLink, '_blank');
+        }
 
         // Function to process text content with bullet points and handle '/' as line breaks
         function processTextWithBullets(text) {
