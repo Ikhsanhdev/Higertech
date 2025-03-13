@@ -274,7 +274,7 @@
             let whatsappLink = null;
             if (footerData && footerData.length > 0) {
                 const whatsappEntry = footerData.find(item => 
-                    item.name && item.name.toLowerCase() === "whatsapp");
+                    item.name && item.name.toLowerCase() === "whatsapp1");
                 
                 if (whatsappEntry) {
                     whatsappLink = whatsappEntry.value;
@@ -283,11 +283,12 @@
             
             if (!whatsappLink) {
                 console.error("WhatsApp information not found in footer data");
-                alert("WhatsApp contact not available. Please contact us through other means.");
+                alert("WhatsApp contact not available. Please contact us through other means."); 
                 return;
+                        
             }
             
-            const message = `Halo, saya tertarik dengan produk: ${productName}`;
+            const message = `Halo, saya mau tanya untuk produk (dari Web) : ${productName}?`;
             const hasParams = whatsappLink.includes('?');
             const separator = hasParams ? '&' : '?';
             const fullWhatsappLink = `${whatsappLink}${separator}text=${encodeURIComponent(message)}`;

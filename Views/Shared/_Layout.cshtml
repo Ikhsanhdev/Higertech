@@ -166,6 +166,11 @@
                         socialContainer.innerHTML = ""; // Kosongkan elemen sebelum diisi ulang
 
                         Object.keys(data.social_links).forEach(key => {
+                            // Skip jika key adalah "whatsapp1"
+                            if (key === "whatsapp1") {
+                                return; // Lewati iterasi ini
+                            }
+                            
                             console.log("aa", key);
                             let iconClass = `bi bi-${key}`;
                             let linkElement = document.createElement("a");
