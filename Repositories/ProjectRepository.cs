@@ -39,8 +39,8 @@ public class ProjectRepository : IProjectRepository
             {
                 query = @"
                     INSERT INTO 
-                    projects ( title, img_url,slug)
-                    VALUES ( @title, @img_url,LOWER(REPLACE(@title, ' ', '-')))
+                    projects ( title, img_url, slug ,description
+                    VALUES ( @title, @img_url,LOWER(REPLACE(@title, ' ', '-')), @description)
                     RETURNING *;";
             }
             else
@@ -49,7 +49,7 @@ public class ProjectRepository : IProjectRepository
                 article.updated_at = DateTime.Now;
                 query = @"
                         UPDATE projects
-                        SET title = @title, img_url = @img_url, updated_at = @updated_at, slug = LOWER(REPLACE(@title, ' ', '-'))
+                        SET title = @title, img_url = @img_url, updated_at = @updated_at, description = @description, slug = LOWER(REPLACE(@title, ' ', '-'))
                         WHERE id = @Id
                         RETURNING *;";
 
@@ -153,6 +153,8 @@ public class ProjectRepository : IProjectRepository
                             id AS ""Id"",
                             title AS ""Title"",
                             img_url AS ""ImgUrl"",
+                            description AS ""Description"",
+                            slug AS ""Slug"",
                             created_at AS ""CreatedAt"",
                             updated_at AS ""UpdatedAt"";
                         FROM projects
@@ -252,6 +254,7 @@ public class ProjectRepository : IProjectRepository
                 id AS ""Id"",
                 title AS ""Title"",
                 img_url AS ""Image"",
+                description AS ""Description"",
                 created_at AS ""CreatedAt"",
                 slug AS ""Slug""
             FROM projects
@@ -279,6 +282,7 @@ public class ProjectRepository : IProjectRepository
             SELECT 
                 id AS ""Id"",
                 title AS ""Title"",
+                description AS ""Description"",
                 img_url AS ""Image"",
                 created_at AS ""CreatedAt""
             FROM projects

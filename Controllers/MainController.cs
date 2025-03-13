@@ -19,6 +19,9 @@ public class MainController : Controller
     private readonly IProjectRepository _projectRepository;
     private readonly IActivitiesRepository _activitiesRepository;
     private readonly IArticleRepository _articleRepository;
+    
+    private string host = "http://localhost";
+    private string port = "5000";
 
     public MainController(ILogger<MainController> logger, IUnitOfWorkRepository unitOfWorkRepository, IProjectRepository projectRepository,
     IActivitiesRepository activitiesRepository, IArticleRepository articleRepository)
@@ -84,7 +87,9 @@ public class MainController : Controller
                     Image = m.Image,
                     ClientName = m.ClientName,
                     DateProject = m.DateProject,
-                    DateActivity = m.DateActivity
+                    DateActivity = m.DateActivity,
+                    Slug = m.Slug
+
                 }).Take(4).OrderByDescending(m => m.DateProject).ToList(),
                 Articles = article.Select(m => new Article
                 {
@@ -166,6 +171,7 @@ public class MainController : Controller
     {
 
         string apiUrl = $"http://localhost:5000/{endPoint}";
+        // string apiUrl = host + ":" + port + "/" + endPoint;
         string username = "m0n1tor_st4tion";
         string password = "H1gertech.1dua3";
 
@@ -208,6 +214,7 @@ public class MainController : Controller
     private async Task<List<Maps>> GetDataFromApi()
     {
         string apiUrl = "http://localhost:5000/LastReading/all";
+        // string apiUrl = host + ":" + port + "/LastReading/all";
         string username = "m0n1tor_st4tion";
         string password = "H1gertech.1dua3";
 

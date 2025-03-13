@@ -1649,6 +1649,14 @@ section,
   transition: 0.3s;
 }
 
+.recent-blog-posts a {
+  color: var(--hg-default-color);
+}
+
+.recent-blog-posts p {
+  color: var(--heading-color);
+}
+
 .recent-blog-posts .post-item .post-img img {
   transition: 0.5s;
 }

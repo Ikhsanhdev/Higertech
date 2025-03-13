@@ -11,6 +11,7 @@ public partial class ActivityVM
     public string? img_url { get; set; }
     public string? client_name { get; set; }
     public string? date_project { get; set; }
+    public string? slug { get; set; }
     public DateTime date_activity { get; set; }
     public DateTime created_at { get; set; }
     public DateTime updated_at { get; set; }

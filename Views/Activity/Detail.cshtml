@@ -1,19 +1,19 @@
-﻿@model Higertech.Models.Article
+﻿@model Higertech.Models.ActivityModel
 @using System.Globalization
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Article";
+    ViewData["Title"] = "Activity Details";
     ViewData["HideFooter"] = true;
 }
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1>Blog Details</h1>
+        <h1>Activity Details</h1>
         <nav class="breadcrumbs">
           <ol>
-            <li><a sp-area="" asp-controller="Article" asp-action="Index">Home</a></li>
-            <li class="current">Blog Details</li>
+            <li><a sp-area="" asp-controller="Activity" asp-action="Index">Home</a></li>
+            <li class="current">Activity Details</li>
           </ol>
         </nav>
       </div>
@@ -38,7 +38,6 @@
 
                 <div class="meta-top">
                   <ul>
-                    <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="blog-details.html">@Model.Author</a></li>
                     <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-details.html"><time datetime="2020-01-01">@Model.CreatedAt.ToString("MMMM dd", new CultureInfo("id-ID"))</time></a></li>
                     @* <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="blog-details.html">12 Comments</a></li> *@
                   </ul>

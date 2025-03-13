@@ -1,3 +1,12 @@
+#maps-second {
+    width: 100%; /* Lebar layar penuh */
+    height: 40vh; /* Tinggi layar penuh */
+    position: relative; /* Menutupi seluruh layar */
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Menghilangkan scroll */
+}
+
 #maps {
     width: 100vw; /* Lebar layar penuh */
     height: 100vh; /* Tinggi layar penuh */

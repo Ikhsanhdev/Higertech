@@ -12,6 +12,7 @@ public interface IActivitiesRepository
     Task<List<ActivityModel>> GetListActivityAsync();
     Task<(IReadOnlyList<dynamic>, int)> GetDataActivity(JqueryDataTableRequest request);
     Task<ActivityVM?> GetActivityByIdAsync(Guid id);
+    Task<ActivityModel> GetActivityBySlugAsync(string slug);
     Task<AjaxResponse> SaveAsync(ActivityVM article);
     Task<bool> DeleteAsync(Guid id);
 }
@@ -196,7 +197,8 @@ public class ActivitiesRepository : IActivitiesRepository
                 client_name AS ""ClientName"",
                 created_at AS ""CreatedAt"",
                 date_activity AS ""DateActivity"",
-                date_project AS ""DateProject""
+                date_project AS ""DateProject"",
+                slug AS ""Slug""
             FROM activities
             WHERE deleted_at IS NULL
             ORDER BY created_at DESC;";
@@ -216,4 +218,33 @@ public class ActivitiesRepository : IActivitiesRepository
         }
     }
 
+  public async Task<ActivityModel> GetActivityBySlugAsync(string slug)
+  {
+   const string query = @"
+            SELECT 
+                id AS ""Id"",
+                title AS ""Title"",
+                description AS ""Description"",
+                img_url AS ""Image"",
+                date_project AS ""DateProject"",
+                created_at AS ""CreatedAt""
+            FROM activities
+            WHERE slug = @Slug
+            AND deleted_at IS NULL;";
+
+        try
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                ActivityModel? model = await connection.QuerySingleOrDefaultAsync<ActivityModel>(query, new { Slug = slug });
+                return model;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching article: {ex.Message}");
+            return null;
+        }
+  }
 }

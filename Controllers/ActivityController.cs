@@ -24,17 +24,17 @@ public class ActivityController : Controller
         return View(model);
     }
     
-    // [Route("/article/{slug}")]
-    // public async Task<IActionResult> Detail(string slug)
-    // {
-    //     var model = await _unitOfWorkRepository.Article.GetArticleBySlugAsync(slug);
+    [Route("/activity/{slug}")]
+    public async Task<IActionResult> Detail(string slug)
+    {
+        var model = await _unitOfWorkRepository.Activities.GetActivityBySlugAsync(slug);
 
-    //     if (model == null)
-    //     {
-    //         return View("~/Views/404/PageNotFound.cshtml");
-    //     }
-    //     return View(model);
-    // }
+        if (model == null)
+        {
+            return View("~/Views/404/PageNotFound.cshtml");
+        }
+        return View(model);
+    }
     
     public IActionResult Privacy()
     {
