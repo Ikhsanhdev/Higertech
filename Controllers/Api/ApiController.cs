@@ -20,11 +20,13 @@ public class ApiController : ControllerBase {
             var response = await _httpClient.GetAsync(targetUrl);
             var content = await response.Content.ReadAsStringAsync();
 
-            return new ContentResult {
-                Content = content,
-                ContentType = "application/json",
-                StatusCode = (int)response.StatusCode
-            };
+            // return new ContentResult {
+            //     Content = content,
+            //     ContentType = "application/json",
+            //     StatusCode = (int)response.StatusCode
+            // };
+
+            return Ok("Berhasil Bypass");
         } catch (Exception ex) {
             return StatusCode(500, new { error = ex.Message });
         }
