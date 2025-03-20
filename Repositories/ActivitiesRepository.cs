@@ -37,8 +37,8 @@ public class ActivitiesRepository : IActivitiesRepository
             {
                 query = @"
                     INSERT INTO 
-                    activities ( title, description, client_name,date_project, img_url,date_activity)
-                    VALUES ( @title,@description,@client_name,@date_project, @img_url,@date_activity)
+                    activities ( title, description, client_name,date_project, img_url,slug,date_activity)
+                    VALUES ( @title,@description,@client_name,@date_project, @img_url,LOWER(REPLACE(@title, ' ', '-')),@date_activity)
                     RETURNING *;";
             }
             else
@@ -47,7 +47,7 @@ public class ActivitiesRepository : IActivitiesRepository
                 model.updated_at = DateTime.Now;
                 query = @"
                         UPDATE activities
-                        SET title = @title ,description = @description,client_name = @client_name,date_project = @date_project,img_url = @img_url, updated_at = @updated_at, date_activity = @date_activity
+                        SET title = @title ,description = @description,client_name = @client_name,slug = LOWER(REPLACE(@title, ' ', '-')),date_project = @date_project,img_url = @img_url, updated_at = @updated_at, date_activity = @date_activity
                         WHERE id = @Id
                         RETURNING *;";
 
