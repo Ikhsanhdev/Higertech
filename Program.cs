@@ -19,6 +19,7 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(opt =>
 builder.Services.RegisterServices();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpClient<ApiController>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
